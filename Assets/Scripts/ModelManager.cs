@@ -19,7 +19,7 @@ public class ModelManager : MonoBehaviour
 {
     // --- SERVER SETTINGS ---
     // !!! IMPORTANT: Replace this with your computer's local IP address !!!
-    private string serverIP = "192.168.1.6";
+    private string serverIP = "192.168.1.2";
     private string serverUrl;
     
     void Awake()
@@ -44,7 +44,7 @@ public class ModelManager : MonoBehaviour
     void Start()
     {
         // Construct the base URL
-        serverUrl = $"http://{serverIP}:5000";
+        serverUrl = $"https://{serverIP}:5000";
         Debug.Log($"[ModelManager] Starting with server URL: {serverUrl}");
 
         // Load the URP Lit shader to prevent it from being stripped
@@ -83,6 +83,8 @@ public class ModelManager : MonoBehaviour
     private IEnumerator TestServerConnectivity()
     {
         Debug.Log($"[ModelManager] Testing connectivity to {serverUrl}");
+        Debug.Log($"[ModelManager] Server IP: {serverIP}");
+        Debug.Log($"[ModelManager] Full URL: {serverUrl}");
         
         // Update dropdown to show testing status
         modelDropdown.ClearOptions();
@@ -90,13 +92,15 @@ public class ModelManager : MonoBehaviour
         modelDropdown.RefreshShownValue();
         
         UnityWebRequest www = UnityWebRequest.Get(serverUrl);
-        www.timeout = 5; // Short timeout for connectivity test
+        www.certificateHandler = new AcceptAllCertificatesSigned();
+        www.timeout = 10; // Increased timeout for better debugging
         
         yield return www.SendWebRequest();
 
         if (www.result == UnityWebRequest.Result.Success)
         {
             Debug.Log("[ModelManager] Server is reachable!");
+            Debug.Log($"[ModelManager] Server response: {www.downloadHandler.text}");
             modelDropdown.ClearOptions();
             modelDropdown.options.Add(new TMP_Dropdown.OptionData("Server connected! Loading models..."));
             modelDropdown.RefreshShownValue();
@@ -105,8 +109,26 @@ public class ModelManager : MonoBehaviour
         {
             Debug.LogError($"[ModelManager] Server connectivity test failed: {www.error}");
             Debug.LogError($"[ModelManager] Response code: {www.responseCode}");
+            Debug.LogError($"[ModelManager] Result: {www.result}");
+            Debug.LogError($"[ModelManager] URL attempted: {serverUrl}");
+            
+            // More specific error message based on the error type
+            string errorMessage = "Connection failed";
+            if (www.result == UnityWebRequest.Result.ConnectionError)
+            {
+                errorMessage = "Network error - check server IP/port";
+            }
+            else if (www.result == UnityWebRequest.Result.ProtocolError)
+            {
+                errorMessage = "Server error - check server status";
+            }
+            else if (www.result == UnityWebRequest.Result.DataProcessingError)
+            {
+                errorMessage = "Data processing error";
+            }
+            
             modelDropdown.ClearOptions();
-            modelDropdown.options.Add(new TMP_Dropdown.OptionData($"HTTP blocked by Unity security"));
+            modelDropdown.options.Add(new TMP_Dropdown.OptionData(errorMessage));
             modelDropdown.RefreshShownValue();
         }
     }
@@ -117,6 +139,7 @@ public class ModelManager : MonoBehaviour
         Debug.Log($"Attempting to connect to: {listUrl}");
         
         UnityWebRequest www = UnityWebRequest.Get(listUrl);
+        www.certificateHandler = new AcceptAllCertificatesSigned();
         www.timeout = 10; // 10 second timeout
         yield return www.SendWebRequest();
 
@@ -301,6 +324,7 @@ public class ModelManager : MonoBehaviour
     {
         string modelUrl = $"{serverUrl}/models/{modelName}";
         UnityWebRequest www = UnityWebRequest.Get(modelUrl);
+        www.certificateHandler = new AcceptAllCertificatesSigned();
         www.timeout = 30; // 30 second timeout for model downloads
 
         Debug.Log($"Downloading {modelName} from {modelUrl}...");

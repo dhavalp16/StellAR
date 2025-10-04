@@ -26,5 +26,6 @@ def get_model(filename):
         return "Model not found", 404
 
 if __name__ == '__main__':
-    # Run the server, making it accessible on your local network
-    app.run(debug=True, host='0.0.0.0', port=5000)
+      # Run the server with SSL context, making it accessible via HTTPS
+      # Make sure 'cert.pem' and 'key.pem' are in the same directory as this script
+      app.run(debug=True, host='0.0.0.0', port=5000, ssl_context=('cert.pem', 'key.pem'))
