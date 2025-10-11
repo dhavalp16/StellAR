@@ -18,8 +18,9 @@ public class ModelList
 public class ModelManager : MonoBehaviour
 {
     // --- SERVER SETTINGS ---
-    // !!! IMPORTANT: Replace this with your computer's local IP address !!!
-    private string serverIP = "192.168.1.2";
+    // !!! IMPORTANT: Add your computer's local IP addresses here !!!
+    private List<string> serverIPs = new List<string> { "192.168.1.2", "192.168.1.15" };
+    private string currentServerIP;
     private string serverUrl;
     
     void Awake()
@@ -43,10 +44,6 @@ public class ModelManager : MonoBehaviour
 
     void Start()
     {
-        // Construct the base URL
-        serverUrl = $"https://{serverIP}:5000";
-        Debug.Log($"[ModelManager] Starting with server URL: {serverUrl}");
-
         // Load the URP Lit shader to prevent it from being stripped
         Material urpLitMaterial = Resources.Load<Material>("URPLitReference");
         if (urpLitMaterial != null)
@@ -61,7 +58,7 @@ public class ModelManager : MonoBehaviour
 
         // Clear dropdown and add a default "loading" option
         modelDropdown.ClearOptions();
-        modelDropdown.options.Add(new TMP_Dropdown.OptionData($"Connecting to {serverIP}..."));
+        modelDropdown.options.Add(new TMP_Dropdown.OptionData("Connecting to server..."));
         modelDropdown.interactable = false;
 
         // Add a listener that calls OnDropdownValueChanged when the selection changes
@@ -73,23 +70,50 @@ public class ModelManager : MonoBehaviour
 
     private IEnumerator FetchAndPrepareModels()
     {
-        // First test basic connectivity
-        yield return StartCoroutine(TestServerConnectivity());
+        // Try to connect to any of the available server IPs
+        bool connectionSuccessful = false;
         
-        yield return StartCoroutine(FetchModelListFromServer());
-        PopulateDropdown();
+        foreach (string ip in serverIPs)
+        {
+            Debug.Log($"[ModelManager] Trying to connect to IP: {ip}");
+            currentServerIP = ip;
+            serverUrl = $"https://{currentServerIP}:5000";
+            
+            // Update dropdown to show current attempt
+            modelDropdown.ClearOptions();
+            modelDropdown.options.Add(new TMP_Dropdown.OptionData($"Trying {ip}..."));
+            modelDropdown.RefreshShownValue();
+            
+            yield return StartCoroutine(TestServerConnectivity());
+            
+            // If connection successful, break out of the loop
+            if (currentServerIP != null)
+            {
+                connectionSuccessful = true;
+                break;
+            }
+        }
+        
+        if (connectionSuccessful)
+        {
+            yield return StartCoroutine(FetchModelListFromServer());
+            PopulateDropdown();
+        }
+        else
+        {
+            // All IPs failed
+            modelDropdown.ClearOptions();
+            modelDropdown.options.Add(new TMP_Dropdown.OptionData("All servers unreachable!"));
+            modelDropdown.RefreshShownValue();
+            Debug.LogError("[ModelManager] Failed to connect to any server IP");
+        }
     }
     
     private IEnumerator TestServerConnectivity()
     {
         Debug.Log($"[ModelManager] Testing connectivity to {serverUrl}");
-        Debug.Log($"[ModelManager] Server IP: {serverIP}");
+        Debug.Log($"[ModelManager] Server IP: {currentServerIP}");
         Debug.Log($"[ModelManager] Full URL: {serverUrl}");
-        
-        // Update dropdown to show testing status
-        modelDropdown.ClearOptions();
-        modelDropdown.options.Add(new TMP_Dropdown.OptionData("Testing connection..."));
-        modelDropdown.RefreshShownValue();
         
         UnityWebRequest www = UnityWebRequest.Get(serverUrl);
         www.certificateHandler = new AcceptAllCertificatesSigned();
@@ -99,37 +123,21 @@ public class ModelManager : MonoBehaviour
 
         if (www.result == UnityWebRequest.Result.Success)
         {
-            Debug.Log("[ModelManager] Server is reachable!");
+            Debug.Log($"[ModelManager] Server is reachable at {currentServerIP}!");
             Debug.Log($"[ModelManager] Server response: {www.downloadHandler.text}");
             modelDropdown.ClearOptions();
-            modelDropdown.options.Add(new TMP_Dropdown.OptionData("Server connected! Loading models..."));
+            modelDropdown.options.Add(new TMP_Dropdown.OptionData($"Connected to {currentServerIP}! Loading models..."));
             modelDropdown.RefreshShownValue();
         }
         else
         {
-            Debug.LogError($"[ModelManager] Server connectivity test failed: {www.error}");
+            Debug.LogError($"[ModelManager] Server connectivity test failed for {currentServerIP}: {www.error}");
             Debug.LogError($"[ModelManager] Response code: {www.responseCode}");
             Debug.LogError($"[ModelManager] Result: {www.result}");
             Debug.LogError($"[ModelManager] URL attempted: {serverUrl}");
             
-            // More specific error message based on the error type
-            string errorMessage = "Connection failed";
-            if (www.result == UnityWebRequest.Result.ConnectionError)
-            {
-                errorMessage = "Network error - check server IP/port";
-            }
-            else if (www.result == UnityWebRequest.Result.ProtocolError)
-            {
-                errorMessage = "Server error - check server status";
-            }
-            else if (www.result == UnityWebRequest.Result.DataProcessingError)
-            {
-                errorMessage = "Data processing error";
-            }
-            
-            modelDropdown.ClearOptions();
-            modelDropdown.options.Add(new TMP_Dropdown.OptionData(errorMessage));
-            modelDropdown.RefreshShownValue();
+            // Set currentServerIP to null to indicate this IP failed
+            currentServerIP = null;
         }
     }
 
@@ -202,8 +210,7 @@ public class ModelManager : MonoBehaviour
     public void TestConnection()
     {
         Debug.Log("[ModelManager] Manual connection test triggered");
-        StartCoroutine(TestServerConnectivity());
-        StartCoroutine(FetchModelListFromServer());
+        StartCoroutine(FetchAndPrepareModels());
     }
 
     // MODIFICATION: Changed from 'IEnumerator' to 'async void' to allow 'await'
