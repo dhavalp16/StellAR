@@ -15,11 +15,20 @@ public class PlaceOnIndicator : MonoBehaviour
     [SerializeField] InputAction touchInput;
     ARRaycastManager aRRaycastManager;
     List<ARRaycastHit> hits = new List<ARRaycastHit>();
+    
+    // Store the current model name for planet detection
+    private string currentModelName = "";
 
     public void SetPrefabToPlace(GameObject prefab)
     {
         placedPrefab = prefab;
         Debug.Log($"[PlaceOnIndicator] Prefab set to: {(prefab != null ? prefab.name : "null")}");
+    }
+    
+    public void SetCurrentModelName(string modelName)
+    {
+        currentModelName = modelName;
+        Debug.Log($"[PlaceOnIndicator] Current model name set to: {modelName}");
     }
 
     private void Awake()
@@ -79,8 +88,18 @@ public class PlaceOnIndicator : MonoBehaviour
 
         if (placedPrefab != null && placementIndicator.activeInHierarchy)
         {
-            GameObject placedObject = Instantiate(placedPrefab, placementIndicator.transform.position, placementIndicator.transform.rotation);
+            var offsetPosition = new Vector3(placementIndicator.transform.position.x, placementIndicator.transform.position.y, placementIndicator.transform.position.z);
+            GameObject placedObject = Instantiate(placedPrefab, offsetPosition, placementIndicator.transform.rotation);
             placedObject.SetActive(true);
+            
+            // Add AutoRotate component to the placed object
+            AutoRotate autoRotate = placedObject.AddComponent<AutoRotate>();
+            
+            // Try to detect planet name from the current model name
+            string planetName = DetectPlanetName(currentModelName);
+            autoRotate.planetName = planetName;
+            Debug.Log($"[PlaceOnIndicator] Added AutoRotate component to {placedObject.name} with planet: {planetName} (from model: {currentModelName})");
+            
             placedObjects.Add(placedObject); // Add the new object to our list
             Debug.Log($"[PlaceOnIndicator] Successfully placed object: {placedObject.name}");
         }
@@ -118,5 +137,33 @@ public class PlaceOnIndicator : MonoBehaviour
         }
         placedObjects.Clear();
         Debug.Log("[PlaceOnIndicator] All placed objects have been cleared.");
+    }
+    
+    // Method to get the list of placed objects (for ObjectRotator)
+    public List<GameObject> GetPlacedObjects()
+    {
+        return new List<GameObject>(placedObjects);
+    }
+    
+    // Method to detect planet name from prefab name
+    private string DetectPlanetName(string prefabName)
+    {
+        string lowerName = prefabName.ToLower();
+        
+        // Check for planet names in the prefab name
+        if (lowerName.Contains("sun")) return "Sun";
+        if (lowerName.Contains("mercury")) return "Mercury";
+        if (lowerName.Contains("venus")) return "Venus";
+        if (lowerName.Contains("earth")) return "Earth";
+        if (lowerName.Contains("moon")) return "Moon";
+        if (lowerName.Contains("mars")) return "Mars";
+        if (lowerName.Contains("jupiter")) return "Jupiter";
+        if (lowerName.Contains("saturn")) return "Saturn";
+        if (lowerName.Contains("uranus")) return "Uranus";
+        if (lowerName.Contains("neptune")) return "Neptune";
+        if (lowerName.Contains("pluto")) return "Pluto";
+        
+        // Default to Earth if no planet detected
+        return "Earth";
     }
 }

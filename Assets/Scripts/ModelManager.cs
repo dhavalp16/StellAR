@@ -86,11 +86,16 @@ public class ModelManager : MonoBehaviour
             
             yield return StartCoroutine(TestServerConnectivity());
             
-            // If connection successful, break out of the loop
+            // Check if this IP was successful by seeing if currentServerIP is still set
             if (currentServerIP != null)
             {
                 connectionSuccessful = true;
+                Debug.Log($"[ModelManager] Successfully connected to {currentServerIP}");
                 break;
+            }
+            else
+            {
+                Debug.Log($"[ModelManager] Failed to connect to {ip}, trying next IP...");
             }
         }
         
@@ -111,30 +116,37 @@ public class ModelManager : MonoBehaviour
     
     private IEnumerator TestServerConnectivity()
     {
-        Debug.Log($"[ModelManager] Testing connectivity to {serverUrl}");
+        // Test connectivity using the /list-models endpoint instead of root
+        string testUrl = serverUrl + "/list-models";
+        Debug.Log($"[ModelManager] Testing connectivity to {testUrl}");
         Debug.Log($"[ModelManager] Server IP: {currentServerIP}");
-        Debug.Log($"[ModelManager] Full URL: {serverUrl}");
+        Debug.Log($"[ModelManager] Full URL: {testUrl}");
         
-        UnityWebRequest www = UnityWebRequest.Get(serverUrl);
+        UnityWebRequest www = UnityWebRequest.Get(testUrl);
         www.certificateHandler = new AcceptAllCertificatesSigned();
         www.timeout = 10; // Increased timeout for better debugging
         
+        Debug.Log($"[ModelManager] Sending web request to: {testUrl}");
         yield return www.SendWebRequest();
+        Debug.Log($"[ModelManager] Web request completed. Result: {www.result}");
 
         if (www.result == UnityWebRequest.Result.Success)
         {
-            Debug.Log($"[ModelManager] Server is reachable at {currentServerIP}!");
+            Debug.Log($"[ModelManager] SUCCESS! Server is reachable at {currentServerIP}!");
             Debug.Log($"[ModelManager] Server response: {www.downloadHandler.text}");
+            Debug.Log($"[ModelManager] Response code: {www.responseCode}");
             modelDropdown.ClearOptions();
             modelDropdown.options.Add(new TMP_Dropdown.OptionData($"Connected to {currentServerIP}! Loading models..."));
             modelDropdown.RefreshShownValue();
+            // Keep currentServerIP as is (don't set to null)
         }
         else
         {
-            Debug.LogError($"[ModelManager] Server connectivity test failed for {currentServerIP}: {www.error}");
+            Debug.LogError($"[ModelManager] FAILED! Server connectivity test failed for {currentServerIP}");
+            Debug.LogError($"[ModelManager] Error: {www.error}");
             Debug.LogError($"[ModelManager] Response code: {www.responseCode}");
             Debug.LogError($"[ModelManager] Result: {www.result}");
-            Debug.LogError($"[ModelManager] URL attempted: {serverUrl}");
+            Debug.LogError($"[ModelManager] URL attempted: {testUrl}");
             
             // Set currentServerIP to null to indicate this IP failed
             currentServerIP = null;
@@ -197,10 +209,14 @@ public class ModelManager : MonoBehaviour
         if (index == 0)
         {
             placementScript.SetPrefabToPlace(null);
+            placementScript.SetCurrentModelName("");
             return;
         }
 
         string selectedModelName = modelNames[index - 1];
+        
+        // Set the current model name for planet detection
+        placementScript.SetCurrentModelName(selectedModelName);
 
         // MODIFICATION: Call the async method directly instead of as a coroutine
         LoadModel(selectedModelName);
@@ -247,8 +263,7 @@ public class ModelManager : MonoBehaviour
                     // Configure the loaded model for AR placement
                     loadedObj.SetActive(false);
                     
-                    // Ensure proper scale (GLB models might be very large or very small)
-                    loadedObj.transform.localScale = Vector3.one * 0.1f; // Scale down to 10% for AR
+                    // Note: Scale will be set by AutoRotate component based on planet data
                     
                     // Add a collider if it doesn't have one (optional, for interaction)
                     if (loadedObj.GetComponent<Collider>() == null)
