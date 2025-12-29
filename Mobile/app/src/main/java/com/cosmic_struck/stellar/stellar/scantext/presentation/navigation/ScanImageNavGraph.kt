@@ -17,7 +17,7 @@ fun NavGraphBuilder.scanImageGraph(navHostController: NavHostController){
     ){
         composable(route = ScanImageScreens.ScanImage.route){
             val entry = remember(it) {
-                navHostController.getBackStackEntry(ScanImageScreens.ScanImage.route)
+                navHostController.getBackStackEntry("scan_image")
             }
             val viewModel : ScanTextViewModel = hiltViewModel(entry)
             ScanTextScreen(
@@ -37,7 +37,7 @@ fun NavGraphBuilder.scanImageGraph(navHostController: NavHostController){
 
         composable(route = ScanImageScreens.ResultScreen.route){
             val entry = remember(it) {
-                navHostController.getBackStackEntry(ScanImageScreens.ResultScreen.route)
+                navHostController.getBackStackEntry("scan_image")
             }
             val viewModel : ScanTextViewModel = hiltViewModel(entry)
             ScanResultsScreen(

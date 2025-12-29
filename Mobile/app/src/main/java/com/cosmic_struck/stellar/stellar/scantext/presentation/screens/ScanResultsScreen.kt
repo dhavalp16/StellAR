@@ -48,14 +48,14 @@ fun ScanResultsScreen(
     ) {
         if (state.isLoading) {
             Box(
-                modifier = modifier.fillMaxSize(),
+                modifier = it.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
         } else if (state.isError.isNotEmpty()) {
             Box(
-                modifier = modifier.fillMaxSize(),
+                modifier = it.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Text("Error: ${state.isError}", color = Color.Red)
@@ -69,14 +69,14 @@ fun ScanResultsScreen(
             // Check if we have data
             if (scanResults.count == 0 || scanResults.info.isEmpty()) {
                 Box(
-                    modifier = modifier.fillMaxSize(),
+                    modifier = it.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Text("No detections found", color = Color.White)
                 }
             } else {
                 LazyColumn(
-                    modifier = modifier.fillMaxSize(),
+                    modifier = it.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
@@ -102,7 +102,7 @@ fun ScanResultsScreen(
             }
         } else {
             Box(
-                modifier = modifier.fillMaxSize(),
+                modifier = it.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Text("No results available", color = Color.White)

@@ -1,5 +1,6 @@
 package com.cosmic_struck.stellar.home.domain.usecases
 
+import android.util.Log
 import com.cosmic_struck.stellar.common.util.Resource
 import com.cosmic_struck.stellar.home.data.dto.JoinedClassroom
 import io.github.jan.supabase.SupabaseClient
@@ -14,12 +15,14 @@ class GetUserJoinedClassroomsUseCase @Inject constructor(private val client: Sup
         emit(Resource.Loading())
         try {
             val response = client.postgrest.rpc(
-                function = "get_user_classrooms",
+                function = "get_user_classrooms_v2",
                 parameters = mapOf("p_user_id" to userId)
             ).decodeList<JoinedClassroom>()
+            Log.d("GET USER JOINED CLASSROOMS",response.toString())
             emit(Resource.Success(response))
         } catch (e: Exception) {
             emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))
+            Log.d("GET USER JOINED CLASSROOMS",e.localizedMessage.toString())
         }
     }
 }

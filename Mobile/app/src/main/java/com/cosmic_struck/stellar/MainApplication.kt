@@ -33,8 +33,8 @@ class MainApplication: Application() {
                                 .header("User-Agent", "Mozilla/5.0 (Android)")
                                 .build()
                             chain
-                                .withConnectTimeout(5, TimeUnit.SECONDS)
-                                .withReadTimeout(5, TimeUnit.SECONDS)
+                                .withConnectTimeout(30, TimeUnit.SECONDS)
+                                .withReadTimeout(30, TimeUnit.SECONDS)
                                 .proceed(newRequest)
                         }
                         .build()

@@ -62,7 +62,7 @@ class HomeScreenViewModel @Inject constructor(
     fun joinClassroom(){
         viewModelScope.launch {
             val userId = supabaseClient.auth.retrieveUserForCurrentSession().id
-            joinClassroomUseCase(state.value.codeText, userId).collect {
+            joinClassroomUseCase(userId,state.value.codeText ).collect {
                 when(it){
                     is Resource.Loading<*> -> _state.value = _state.value.copy(isLoading = true)
 
