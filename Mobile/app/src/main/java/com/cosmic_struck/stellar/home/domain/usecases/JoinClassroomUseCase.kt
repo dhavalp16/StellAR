@@ -1,5 +1,6 @@
 package com.cosmic_struck.stellar.home.domain.usecases
 
+import androidx.media3.common.util.Log
 import com.cosmic_struck.stellar.common.util.Resource
 import com.cosmic_struck.stellar.home.data.dto.JoinResponse
 import io.github.jan.supabase.SupabaseClient
@@ -20,11 +21,14 @@ class JoinClassroomUseCase @Inject constructor(private val client: SupabaseClien
 
             if (response.status == "success") {
                 emit(Resource.Success(response))
+                Log.d("JOIN CLASSROOM USECASE",response.toString())
             } else {
                 emit(Resource.Error(response.message))
+                Log.d("JOIN CLASSROOM USECASE",response.message.toString())
             }
         } catch (e: Exception) {
             emit(Resource.Error(e.localizedMessage ?: "Connection error"))
+            Log.d("JOIN CLASSROOM USECASE",e.localizedMessage.toString())
         }
     }
 }

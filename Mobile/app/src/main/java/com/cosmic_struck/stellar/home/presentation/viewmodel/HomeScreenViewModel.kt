@@ -66,11 +66,13 @@ class HomeScreenViewModel @Inject constructor(
                 when(it){
                     is Resource.Loading<*> -> _state.value = _state.value.copy(isLoading = true)
 
-                    is Resource.Error<*> -> _state.value = _state.value.copy(
+                    is Resource.Error<*> -> {_state.value = _state.value.copy(
                         isLoading = false,
                         error = it.message,
                         classroomJoinStatus = ClassroomJoinStatus.ERROR
                     )
+                    Log.d("HOME SCREEN VIEWMODEL",it.message.toString())
+                    }
 
                     is Resource.Success<*> -> {
                         _state.value = _state.value.copy(
