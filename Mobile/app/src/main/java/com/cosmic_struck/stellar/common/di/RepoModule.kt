@@ -1,0 +1,22 @@
+package com.cosmic_struck.stellar.common.di
+
+import com.cosmic_struck.stellar.stellar.scantext.data.remote.ScanService
+import com.cosmic_struck.stellar.stellar.scantext.data.repository.ScanImageRepoImpl
+import com.cosmic_struck.stellar.stellar.scantext.domain.repository.ScanImageRepo
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object RepoModule {
+    @Provides
+    @Singleton
+    fun provideScanImageRepo(api: ScanService): ScanImageRepo{
+        return ScanImageRepoImpl(
+            api = api
+        )
+    }
+}
