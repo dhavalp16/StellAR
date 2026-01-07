@@ -14,7 +14,7 @@ class GetUserProfileUseCase @Inject constructor(private val client: SupabaseClie
         emit(Resource.Loading())
         try {
             val response = client.postgrest.rpc(
-                function = "get_user_by_id",
+                function = "get_user_by_id_v2",
                 parameters = mapOf("p_user_id" to userId)
             ).decodeSingle<UserProfile>()
             emit(Resource.Success(response))

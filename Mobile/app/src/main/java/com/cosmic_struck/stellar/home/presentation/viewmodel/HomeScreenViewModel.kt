@@ -3,11 +3,13 @@ package com.cosmic_struck.stellar.home.presentation.viewmodel
 import androidx.annotation.OptIn
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import com.cosmic_struck.stellar.common.util.Resource
+import com.cosmic_struck.stellar.home.domain.usecases.GetUserCreatedClassroom
 import com.cosmic_struck.stellar.home.domain.usecases.GetUserJoinedClassroomsUseCase
 import com.cosmic_struck.stellar.home.domain.usecases.GetUserProfileUseCase
 import com.cosmic_struck.stellar.home.domain.usecases.JoinClassroomUseCase
@@ -27,7 +29,9 @@ class HomeScreenViewModel @Inject constructor(
     private val getUserJoinedClassroomsUseCase: GetUserJoinedClassroomsUseCase,
     private val getUserProfileUseCase: GetUserProfileUseCase,
     private val joinClassroomUseCase: JoinClassroomUseCase,
-    private val supabaseClient: SupabaseClient
+    private val supabaseClient: SupabaseClient,
+    private val savedStateHandle: SavedStateHandle,
+    private val getUserCreatedClassroom: GetUserCreatedClassroom
 ): ViewModel() {
 
     private val _state = MutableStateFlow(HomeScreenState())
@@ -36,6 +40,7 @@ class HomeScreenViewModel @Inject constructor(
     init {
         getUser()
         getJoinedClassrooms()
+//        getCreatedClassrooms()
     }
 
 
@@ -101,7 +106,32 @@ class HomeScreenViewModel @Inject constructor(
                     is Resource.Success<*> -> _state.value = _state.value.copy(
                           userName = it.data?.user_name.toString(),
                           userLevel = it.data?.level.toString(),
+                        profile = it.data?.user_pp.toString(),
                          isLoading = false)
+                }
+            }
+        }
+    }
+    fun getCreatedClassrooms(){
+        viewModelScope.launch {
+            val userId = supabaseClient.auth.retrieveUserForCurrentSession().id
+            getUserCreatedClassroom(userId).collect {it->
+                when(it){
+                    is Resource.Error<*> -> {
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            error =  it.message
+                        )
+                    }
+                    is Resource.Loading<*> -> {
+                        _state.value = _state.value.copy(
+                            isLoading = true
+                        )
+                    }
+                    is Resource.Success<*> -> _state.value.copy(
+                        isLoading = false,
+                        userCreatedClassrooms = it.data ?: emptyList()
+                    )
                 }
             }
         }
@@ -129,6 +159,12 @@ class HomeScreenViewModel @Inject constructor(
         }
         else{
             _state.value = _state.value.copy(selected = Options.CLASSROOM)
+        }
+    }
+
+    fun saveClassroomId(classroomId: String){
+        viewModelScope.launch {
+            savedStateHandle["classroom_id"] = classroomId
         }
     }
 

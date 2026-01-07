@@ -36,6 +36,7 @@ android {
         properties.load(file.inputStream())
         buildConfigField("String", "SUPABASE_URL", properties.getProperty("SUPABASE_URL"))
         buildConfigField("String", "SUPABASE_KEY", properties.getProperty("SUPABASE_KEY"))
+        buildConfigField("String","ARCORE_KEY",properties.getProperty("ARCORE_KEY"))
     }
 
     buildTypes {
@@ -69,6 +70,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.compose.foundation)
     ksp("com.google.dagger:hilt-android-compiler:2.57.2")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 

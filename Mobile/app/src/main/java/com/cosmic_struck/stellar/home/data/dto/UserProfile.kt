@@ -8,5 +8,6 @@ data class UserProfile(
     val created_at: String,
     val user_name: String = "User",
     val level: Long = 1,
-    val total_xp: Double = 0.0
+    val total_xp: Double = 0.0,
+    val user_pp: String = ""
 )

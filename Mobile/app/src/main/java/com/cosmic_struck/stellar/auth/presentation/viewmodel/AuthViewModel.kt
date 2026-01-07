@@ -1,5 +1,7 @@
 package com.cosmic_struck.stellar.auth.presentation.viewmodel
 
+import android.app.Application
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -23,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val signUpUseCase: SignUpUseCase,
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val application: Application
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AuthScreenState())
@@ -31,7 +34,13 @@ class AuthViewModel @Inject constructor(
 
     fun signUpWithEmail(){
         viewModelScope.launch {
-            signUpUseCase(state.value.username,state.value.email,state.value.password).collect {
+            signUpUseCase(
+                state.value.username,
+                state.value.email,
+                state.value.password,
+                state.value.profileImage,
+                context = application
+            ).collect {
                 when(it){
                     is Resource.Loading<*> -> {_state.value = _state.value.copy(isLoading = true) }
                     is Resource.Error<*> -> {_state.value = _state.value.copy(isLoading = false, error = it.message.toString())}
@@ -40,7 +49,13 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
-
+    fun setProfileImage(uri: Uri?) {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(
+                profileImage = uri
+            )
+        }
+    }
 
     fun signInWithEmail(){
         viewModelScope.launch {

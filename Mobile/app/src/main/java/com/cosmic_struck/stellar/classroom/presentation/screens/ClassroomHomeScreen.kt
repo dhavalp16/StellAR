@@ -12,19 +12,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.cosmic_struck.stellar.R
 import com.cosmic_struck.stellar.classroom.presentation.components.ClassroomTopAppBar
 import com.cosmic_struck.stellar.classroom.presentation.components.MemberCard
 import com.cosmic_struck.stellar.classroom.presentation.components.ModelCardClassroom
 import com.cosmic_struck.stellar.classroom.presentation.viewmodel.ClassroomViewModel
 import com.cosmic_struck.stellar.classroom.presentation.viewmodel.Options
 import com.cosmic_struck.stellar.common.components.BackgroundScaffold
+import com.cosmic_struck.stellar.common.components.CustomExpandableFAB
+import com.cosmic_struck.stellar.common.components.FABItem
 import com.cosmic_struck.stellar.common.components.TabSwitcher
 
 @Composable
 fun ClassroomHomeScreen(
     navigateToModelScreen : () -> Unit,
+    navigateToCreateModuleScreen: () -> Unit,
     viewmodel: ClassroomViewModel = hiltViewModel(),
     modifier: Modifier = Modifier) {
 
@@ -36,7 +41,25 @@ fun ClassroomHomeScreen(
             ClassroomTopAppBar(
                 classroomMembers = state.classroomMembers,
                 classroomName = state.classroomName,
-                classroomAuthor = state.classroomAuthor
+                classroomAuthor = state.classroomAuthor,
+                classroomCode = state.classroomCode,
+            )
+        },
+        floatingActionButton = {
+            CustomExpandableFAB(
+                items = listOf<FABItem>(
+                    FABItem(
+                        icon = painterResource(R.drawable.add),
+                        text = "Add Module"
+                    )
+                ),
+                onItemClick = {it ->
+                    when(it.text){
+                        "Add Module" -> {
+                            navigateToCreateModuleScreen()
+                        }
+                    }
+                }
             )
         }
     ) { it ->

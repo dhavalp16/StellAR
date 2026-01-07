@@ -23,18 +23,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.cosmic_struck.stellar.R
 import com.cosmic_struck.stellar.common.components.BackgroundScaffold
 import com.cosmic_struck.stellar.common.components.TabSwitcher
-import com.cosmic_struck.stellar.common.navigation.Screens
 import com.cosmic_struck.stellar.common.util.gridList
 import com.cosmic_struck.stellar.home.presentation.ClassroomJoinStatus
 import com.cosmic_struck.stellar.home.presentation.viewmodel.HomeScreenViewModel
 import com.cosmic_struck.stellar.home.presentation.Options
 import com.cosmic_struck.stellar.home.presentation.components.ClassroomCard
-import com.cosmic_struck.stellar.home.presentation.components.CustomExpandableFAB
-import com.cosmic_struck.stellar.home.presentation.components.FABItem
+import com.cosmic_struck.stellar.common.components.CustomExpandableFAB
+import com.cosmic_struck.stellar.common.components.FABItem
 import com.cosmic_struck.stellar.home.presentation.components.GridItem
 import com.cosmic_struck.stellar.home.presentation.components.JoinClassroomBottomSheet
 import com.cosmic_struck.stellar.home.presentation.components.UserTopBar
@@ -45,7 +43,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun HomeScreen(
     navigateToModuleScreen: (String) -> Unit,
-    navigateToClassroomHomeScreen: () -> Unit,
+    navigateToClassroomHomeScreen: (String) -> Unit,
     viewModel: HomeScreenViewModel = hiltViewModel<HomeScreenViewModel>(),
     modifier: Modifier = Modifier) {
 
@@ -78,6 +76,7 @@ fun HomeScreen(
             UserTopBar(
                 userName = state.userName,
                 userLevel = state.userLevel,
+                userPic = state.profile,
             )
         },
         color = Color.White,
@@ -154,7 +153,7 @@ fun HomeScreen(
                             state.joinedClassrooms.forEach { it ->
                                 ClassroomCard(
                                     onClick = {
-                                        navigateToClassroomHomeScreen()
+                                        navigateToClassroomHomeScreen(it.classroom_id)
                                     },
                                     classroom = it,
                                     modifier = Modifier

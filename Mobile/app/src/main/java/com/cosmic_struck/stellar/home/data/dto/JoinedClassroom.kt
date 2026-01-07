@@ -10,5 +10,6 @@ data class JoinedClassroom(
     val join_code: String,
     val created_at: String,
     val creator_name: String,
-    val member_count: Long
+    val member_count: Long,
+    val is_creator: Boolean
 )

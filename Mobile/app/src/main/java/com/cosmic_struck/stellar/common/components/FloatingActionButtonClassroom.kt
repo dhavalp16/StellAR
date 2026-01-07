@@ -1,4 +1,4 @@
-package com.cosmic_struck.stellar.home.presentation.components
+package com.cosmic_struck.stellar.common.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState

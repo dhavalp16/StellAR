@@ -20,6 +20,7 @@ fun ClassroomTopAppBar(
     classroomName: String = "Lalit",
     classroomAuthor: String = "21",
     classroomMembers: String = "21",
+    classroomCode: String? = null,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -51,6 +52,14 @@ fun ClassroomTopAppBar(
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Medium,
                 )
+                if(classroomCode != null){
+                    Text(
+                        text = classroomCode,
+                        fontFamily = Rajdhani,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Medium,
+                    )
+                }
         }
     }
 }

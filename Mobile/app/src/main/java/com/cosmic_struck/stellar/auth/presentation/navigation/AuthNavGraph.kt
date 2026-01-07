@@ -51,7 +51,8 @@ fun NavGraphBuilder.authGraph(navHostController: NavHostController){
                 },
                 navigateback = {
                     navHostController.popBackStack()
-                }
+                },
+                setImageUri = viewModel::setProfileImage
             )
         }
 

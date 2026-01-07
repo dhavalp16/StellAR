@@ -9,12 +9,14 @@ data class ClassroomHomeScreenState(
     val classroomName: String = "",
     val classroomAuthor : String = "",
     val classroomMembers: String = "",
+    val classroomCode: String = "",
     val classroomMembersList: List<ClassroomMember> = emptyList(),
     val classroomModelsList: List<ClassroomModel> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
     val options: List<Options> = listOf(Options.MEMBERS,Options.MODELS),
-    val selected : Options = Options.MEMBERS
+    val selected : Options = Options.MEMBERS,
+    val isCreator: Boolean = false
 )
 
 enum class Options{

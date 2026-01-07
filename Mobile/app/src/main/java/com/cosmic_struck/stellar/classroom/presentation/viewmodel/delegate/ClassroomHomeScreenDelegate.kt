@@ -8,6 +8,8 @@ import com.cosmic_struck.stellar.classroom.domain.GetClassroomModelsUseCase
 import com.cosmic_struck.stellar.classroom.presentation.viewmodel.ClassroomHomeScreenState
 import com.cosmic_struck.stellar.classroom.presentation.viewmodel.Options
 import com.cosmic_struck.stellar.common.util.Resource
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +19,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ClassroomHomeScreenDelegate @Inject constructor(
+    private val supabaseClient: SupabaseClient,
     private val getClassroomDetailsUseCase: GetClassroomDetailsUseCase,
     private val getClassroomMembersUseCase: GetClassroomMembersUseCase,
     private val getClassroomModelsUseCase: GetClassroomModelsUseCase,
@@ -27,6 +30,7 @@ class ClassroomHomeScreenDelegate @Inject constructor(
 
     init {
         val classroomId = savedStateHandle.get<String>("classroom_id")
+        Log.d("Classroom Id Checking",classroomId.toString())
         if (classroomId != null) {
             _state.update { it.copy(classroom_id = classroomId) }
         }
@@ -53,6 +57,7 @@ class ClassroomHomeScreenDelegate @Inject constructor(
 
 
     private suspend fun fetchDetails(id: String) {
+        val userId = supabaseClient.auth.retrieveUserForCurrentSession().id
         getClassroomDetailsUseCase(id).collect { resource ->
             _state.update {
                 when (resource) {
@@ -61,7 +66,9 @@ class ClassroomHomeScreenDelegate @Inject constructor(
                     is Resource.Success -> it.copy(
                         classroomName = resource.data?.name ?: "",
                         classroomAuthor = resource.data?.creator_name ?: "",
-                        isLoading = false
+                        isLoading = false,
+                        isCreator = resource.data?.creator_id == userId,
+                        classroomCode = resource.data?.classroom_code.toString()
                     )
                 }
             }

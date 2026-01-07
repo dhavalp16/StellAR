@@ -11,6 +11,7 @@ import com.cosmic_struck.stellar.auth.presentation.navigation.authGraph
 import com.cosmic_struck.stellar.biology.home.BiologyHomeScreen
 import com.cosmic_struck.stellar.chemistry.home.ChemistryHomeScreen
 import com.cosmic_struck.stellar.classroom.presentation.navigation.classroomGraph
+import com.cosmic_struck.stellar.create_module.presentation.navigation.createModuleNavigation
 import com.cosmic_struck.stellar.history.home.HistoryHomeScreen
 import com.cosmic_struck.stellar.home.presentation.screens.HomeScreen
 import com.cosmic_struck.stellar.physics.home.PhysicsHomeScreen
@@ -40,8 +41,8 @@ fun MainNavGraph(
                         navigateToModuleScreen = {
                             navHostController.navigate(it)
                         },
-                        navigateToClassroomHomeScreen = {
-                            navHostController.navigate("classroom_graph")
+                        navigateToClassroomHomeScreen = {it->
+                            navHostController.navigate("classroom_graph/$it")
                         }
                     )
             }
@@ -77,6 +78,7 @@ fun MainNavGraph(
             scanImageGraph(navHostController)
             modelNavGraph(navHostController)
             classroomGraph(navHostController)
+            createModuleNavigation(navHostController)
 
         }
     }

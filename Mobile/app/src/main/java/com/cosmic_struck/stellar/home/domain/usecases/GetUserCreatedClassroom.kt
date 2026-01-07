@@ -10,19 +10,23 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class GetUserJoinedClassroomsUseCase @Inject constructor(private val client: SupabaseClient) {
-    operator fun invoke(userId: String): Flow<Resource<List<JoinedClassroom>>> = flow {
+class GetUserCreatedClassroom @Inject constructor(
+    private val supabaseClient: SupabaseClient
+){
+    operator fun invoke(userId: String) : Flow<Resource<List<JoinedClassroom>>> = flow {
         emit(Resource.Loading())
         try {
-            val response = client.postgrest.rpc(
-                function = "get_user_classrooms_v3",
-                parameters = mapOf("p_user_id" to userId)
-            ).decodeList<JoinedClassroom>()
-            Log.d("GET USER JOINED CLASSROOMS",response.toString())
-            emit(Resource.Success(response))
+            val classrooms = supabaseClient
+                .postgrest
+                .rpc(
+                    function = "get_classrooms_created_by_user",
+                    parameters = mapOf("p_user_id" to userId)
+                )
+                .decodeList<JoinedClassroom>()
+            emit(Resource.Success(classrooms))
         } catch (e: Exception) {
             emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))
-            Log.d("GET USER JOINED CLASSROOMS",e.localizedMessage.toString())
+            Log.d("Error",e.localizedMessage.toString())
         }
     }
 }

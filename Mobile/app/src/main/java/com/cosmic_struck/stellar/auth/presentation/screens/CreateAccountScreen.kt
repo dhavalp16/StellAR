@@ -1,9 +1,16 @@
 package com.cosmic_struck.stellar.auth.presentation.screens
 
+import android.graphics.drawable.Icon
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +20,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -37,6 +46,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -45,6 +56,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.rememberAsyncImagePainter
 import com.cosmic_struck.stellar.R
 import com.cosmic_struck.stellar.auth.presentation.viewmodel.AuthViewModel
 import com.cosmic_struck.stellar.common.util.Rajdhani
@@ -54,6 +66,7 @@ import com.cosmic_struck.stellar.ui.theme.Blue5
 @Composable
 fun CreateAccountScreenEmailValidation(
     navigateback : () -> Unit = {},
+    setImageUri: (Uri?) -> Unit,
     navigateToPasswordValidation: () -> Unit = {},
     viewModel: AuthViewModel = hiltViewModel(),
     modifier: Modifier = Modifier) {
@@ -87,7 +100,16 @@ fun CreateAccountScreenEmailValidation(
         val activeButton = remember { mutableStateOf(false) }
         val emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-z]+$"
         var username by remember { mutableStateOf("") }
+        val context = LocalContext.current
+        var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
+        val imagePickerLauncher =
+            rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.GetContent()
+            ) { uri ->
+                selectedImageUri = uri
+                setImageUri(uri)
+            }
 
 
         Box(
@@ -98,6 +120,33 @@ fun CreateAccountScreenEmailValidation(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
+
+                Box(
+                    modifier = Modifier
+                        .size(96.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .clip(CircleShape)
+                        .background(Color.LightGray)
+                        .clickable { imagePickerLauncher.launch("image/*") },
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (selectedImageUri != null) {
+                        Image(
+                            painter = rememberAsyncImagePainter(selectedImageUri),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    } else {
+                        Icon(
+                            painter = painterResource(R.drawable.twotone_android_24),
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(48.dp)
+                        )
+                    }
+                }
+
                 Text(
                     text = "User Name",
                     modifier = Modifier

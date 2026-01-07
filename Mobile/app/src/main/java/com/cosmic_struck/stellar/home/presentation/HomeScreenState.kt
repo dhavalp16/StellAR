@@ -12,7 +12,9 @@ data class HomeScreenState(
     val modalSheetState : Boolean = false,
     val userName : String = "",
     val userLevel: String = "",
+    val profile: String = "",
     val classroomJoinStatus: ClassroomJoinStatus = ClassroomJoinStatus.NOT_JOINED,
+    val userCreatedClassrooms: List<JoinedClassroom> = emptyList(),
 )
 
 enum class ClassroomJoinStatus(){

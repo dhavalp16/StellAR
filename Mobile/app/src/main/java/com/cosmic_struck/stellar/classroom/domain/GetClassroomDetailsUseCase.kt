@@ -14,7 +14,7 @@ class GetClassroomDetailsUseCase @Inject constructor(private val client: Supabas
         emit(Resource.Loading())
         try {
             val response = client.postgrest.rpc(
-                function = "get_classroom_details",
+                function = "get_classroom_details_v3",
                 parameters = mapOf("p_classroom_id" to classId)
             ).decodeSingle<ClassroomDetail>()
 

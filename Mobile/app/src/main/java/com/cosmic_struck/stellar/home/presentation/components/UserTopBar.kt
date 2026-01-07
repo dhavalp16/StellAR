@@ -68,7 +68,7 @@ fun UserTopBar(
             CoilImage(
                 imageModel = { userPic },
                 imageOptions = ImageOptions(
-                    contentScale = ContentScale.FillBounds,
+                    contentScale = ContentScale.Fit,
                     alignment = Alignment.Center
                 ),
                 modifier = Modifier
