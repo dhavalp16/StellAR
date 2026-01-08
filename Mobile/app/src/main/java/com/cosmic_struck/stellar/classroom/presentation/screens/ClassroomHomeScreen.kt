@@ -29,7 +29,7 @@ import com.cosmic_struck.stellar.common.components.TabSwitcher
 @Composable
 fun ClassroomHomeScreen(
     navigateToModelScreen : () -> Unit,
-    navigateToCreateModuleScreen: () -> Unit,
+    navigateToCreateModuleScreen: (String) -> Unit,
     viewmodel: ClassroomViewModel = hiltViewModel(),
     modifier: Modifier = Modifier) {
 
@@ -46,21 +46,26 @@ fun ClassroomHomeScreen(
             )
         },
         floatingActionButton = {
-            CustomExpandableFAB(
-                items = listOf<FABItem>(
-                    FABItem(
-                        icon = painterResource(R.drawable.add),
-                        text = "Add Module"
-                    )
-                ),
-                onItemClick = {it ->
-                    when(it.text){
-                        "Add Module" -> {
-                            navigateToCreateModuleScreen()
+            if (state.isCreator){
+                CustomExpandableFAB(
+                    items = listOf<FABItem>(
+                        FABItem(
+                            icon = painterResource(R.drawable.add),
+                            text = "Add Module"
+                        )
+                    ),
+                    onItemClick = {it ->
+                        when(it.text){
+                            "Add Module" -> {
+                                navigateToCreateModuleScreen(
+                                    state.classroom_id
+                                )
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
+
         }
     ) { it ->
         Box(
@@ -111,9 +116,9 @@ fun ClassroomHomeScreen(
                             ModelCardClassroom(
                                 navigateToModelScreen = { navigateToModelScreen()},
                                 modelURL = it.model_url,
-                                modelThumbnail = it.model_thumbnail ?: "",
-                                modelName = it.model_name,
-                                modelDescription = it.description ?: "No Description",
+                                modelThumbnail = it.image_url,
+                                modelName = it.module_name,
+                                modelDescription = it.module_desc,
                             )
                         }
                     }

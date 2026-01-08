@@ -2,6 +2,7 @@ package com.cosmic_struck.stellar.classroom.presentation.viewmodel
 
 import com.cosmic_struck.stellar.classroom.data.dto.ClassroomMember
 import com.cosmic_struck.stellar.classroom.data.dto.ClassroomModel
+import com.cosmic_struck.stellar.classroom.data.dto.ClassroomModule
 
 
 data class ClassroomHomeScreenState(
@@ -11,7 +12,7 @@ data class ClassroomHomeScreenState(
     val classroomMembers: String = "",
     val classroomCode: String = "",
     val classroomMembersList: List<ClassroomMember> = emptyList(),
-    val classroomModelsList: List<ClassroomModel> = emptyList(),
+    val classroomModelsList: List<ClassroomModule> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
     val options: List<Options> = listOf(Options.MEMBERS,Options.MODELS),

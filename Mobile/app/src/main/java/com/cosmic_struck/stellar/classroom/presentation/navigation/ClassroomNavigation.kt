@@ -34,7 +34,7 @@ fun NavGraphBuilder.classroomGraph(navHostController: NavHostController){
                 navigateToModelScreen = {},
                 viewmodel = viewmodel,
                 navigateToCreateModuleScreen = {
-                    navHostController.navigate("create_module_graph")
+                    navHostController.navigate("create_module_graph/$it")
                 }
             )
         }
