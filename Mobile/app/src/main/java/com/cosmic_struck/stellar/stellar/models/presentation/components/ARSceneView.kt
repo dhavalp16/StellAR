@@ -54,6 +54,9 @@ fun ARModelSceneView(
 
         onSessionUpdated = { _, updatedFrame ->
             frame = updatedFrame
+            val tracking = frame!!.camera.trackingState
+            Log.d("AR", "Camera tracking = $tracking")
+
         },
 
         onGestureListener = rememberOnGestureListener(
