@@ -1,5 +1,6 @@
 package com.cosmic_struck.stellar.stellar.models.presentation.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,6 +31,9 @@ fun ModelViewerTopAppBar(
             .statusBarsPadding()
             .fillMaxWidth()
             .padding(16.dp)
+            .background(
+                color = Color.Transparent
+            )
     ) {
         IconButton(
             onClick = { onNavigateBack() },

@@ -143,7 +143,7 @@ dependencies {
 
     implementation("dev.chrisbanes.haze:haze-jetpack-compose:0.4.1")
     implementation("io.github.sceneview:sceneview:2.3.1")
-
+    implementation("io.github.sceneview:arsceneview:2.3.2")
     implementation("io.ktor:ktor-client-okhttp:3.3.3")
 
     implementation("com.google.mlkit:text-recognition:16.0.1")

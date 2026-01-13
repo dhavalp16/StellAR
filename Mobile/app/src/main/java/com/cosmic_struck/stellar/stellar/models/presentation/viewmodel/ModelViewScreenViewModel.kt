@@ -103,28 +103,16 @@ class ModelViewScreenViewModel @Inject constructor(
         }
     }
 
-    fun onChangeRotation(rotationSpeed: Float) {
-        viewModelScope.launch {
-            _state.value = _state.value.copy(
-                rotationSpeed = rotationSpeed.coerceIn(0f, 5f)
-            )
-        }
+    fun onChangeRotationSpeed(speed: Float) {
+        _state.value = _state.value.copy(
+            rotationSpeed = speed.coerceIn(0f, 3f)
+        )
     }
 
-    fun onChangeZoomScale(zoomScale: Float) {
-        viewModelScope.launch {
-            _state.value = _state.value.copy(
-                zoomScale = zoomScale.coerceIn(0.1f, 3f)
-            )
-        }
-    }
-
-    fun onChangeCameraDistance(cameraDistance: Float) {
-        viewModelScope.launch {
-            _state.value = _state.value.copy(
-                cameraDistance = cameraDistance.coerceIn(1f, 10f)
-            )
-        }
+    fun onChangeCameraDistance(distance: Float) {
+        _state.value = _state.value.copy(
+            cameraDistance = distance.coerceIn(1.5f, 6f)
+        )
     }
 
     fun onChangeModelNode(modelNode: ModelNode) {

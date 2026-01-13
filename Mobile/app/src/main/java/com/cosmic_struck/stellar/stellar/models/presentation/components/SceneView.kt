@@ -40,7 +40,6 @@ fun SceneView(
     view: View,
     cameraDistance: Float,
     rotationSpeed: Float,
-    zoomScale: Float,
     rotationAngle: Float,
     modelPath: String?,
     onChangeRotationAngle: (Float) -> Unit,
@@ -49,134 +48,71 @@ fun SceneView(
 ) {
     val loadedModelNode = remember { mutableStateOf<ModelNode?>(null) }
 
-        Scene(
-            modifier = modifier.fillMaxSize()
-                .padding(
-                    20.dp
-                ),
-            engine = engine,
-            view = view,
-            renderer = rememberRenderer(engine),
-            scene = rememberScene(engine),
-            modelLoader = modelLoader,
-            materialLoader = materialLoader,
-            environmentLoader = environmentLoader,
-            collisionSystem = rememberCollisionSystem(view),
+    Scene(
+        modifier = modifier
+            .fillMaxSize(),
+        engine = engine,
+        view = view,
+        renderer = rememberRenderer(engine),
+        scene = rememberScene(engine),
+        modelLoader = modelLoader,
+        materialLoader = materialLoader,
+        environmentLoader = environmentLoader,
+        collisionSystem = rememberCollisionSystem(view),
 
-            // Main Light Setup
-            mainLightNode = rememberMainLightNode(engine) {
-                intensity = 100_000.0f
-            },
+        // Light
+        mainLightNode = rememberMainLightNode(engine) {
+            intensity = 80_000f
+        },
 
-            // Camera Setup
-            cameraNode = rememberCameraNode(engine) {
-                position = Position(
-                    x = 0.0f,
-                    y = 0.0f,
-                    z = cameraDistance
-                )
-            },
+        // Camera (ZOOM IS DONE HERE)
+        cameraNode = rememberCameraNode(engine) {
+            position = Position(0f, 0f, cameraDistance)
+        },
 
-            cameraManipulator = rememberCameraManipulator(),
+        cameraManipulator = rememberCameraManipulator(),
 
-            // Child Nodes - Model Loading
-            childNodes = rememberNodes {
-                try {
-                    Log.d("SceneView", "Loading model from file system: $modelPath")
+        childNodes = rememberNodes {
+            try {
+                val file = File(modelPath ?: return@rememberNodes)
+                if (!file.exists() || !file.canRead()) return@rememberNodes
 
-                    // Read file from file system (not assets)
-                    val file = File(modelPath!!)
-
-                    if (!file.exists()) {
-                        Log.e("SceneView", "File does not exist: $modelPath")
-                        return@rememberNodes
-                    }
-
-                    if (!file.canRead()) {
-                        Log.e("SceneView", "Cannot read file: $modelPath")
-                        return@rememberNodes
-                    }
-
-                    // Read file bytes
-                    val buffer = file.inputStream().buffered().use { input ->
-                        val bytes = input.readBytes()
-                        ByteBuffer.wrap(bytes)
-                    }
-
-                    Log.d("SceneView", "File read successfully, size: ${buffer.capacity()} bytes")
-
-                    // Create model instance from buffer
-                    // Use the correct method that accepts ByteBuffer for file system files
-                    val modelInstance = modelLoader.createModelInstance(buffer)
-
-                    Log.d("SceneView", "Model instance created successfully from file buffer")
-
-                    // Create model node
-                    val node = ModelNode(
-                        modelInstance = modelInstance
-                    ).apply {
-                        // Set initial position
-                        position = Position(x = 0.0f, y = 0.0f, z = 0.0f)
-
-                        // Set initial scale
-                        scale = Scale(x = zoomScale, y = zoomScale, z = zoomScale)
-
-                        // Set initial rotation
-                        rotation = Rotation(y = rotationAngle)
-
-                        Log.d("SceneView", "ModelNode configured with initial transforms")
-                    }
-
-                    // Store reference and notify callback
-                    loadedModelNode.value = node
-                    onChangeModelNode(node)
-
-                    // Add to scene
-                    add(node)
-
-                    Log.d("SceneView", "Model added to scene successfully")
-
-                } catch (e: Exception) {
-                    Log.e("SceneView", "Error loading model: ${e.message}", e)
-                    e.printStackTrace()
+                val buffer = file.inputStream().use {
+                    ByteBuffer.wrap(it.readBytes())
                 }
-            },
 
-            // Gesture Handling
-            onGestureListener = rememberOnGestureListener(
-                onDoubleTapEvent = { _, tappedNode ->
-                    if (tappedNode != null) {
-                        Log.d("SceneView", "Double tap detected, scaling node")
-                        tappedNode.scale = Scale(
-                            x = tappedNode.scale.x * 1.2f,
-                            y = tappedNode.scale.y * 1.2f,
-                            z = tappedNode.scale.z * 1.2f
-                        )
-                    }
+                val modelInstance = modelLoader.createModelInstance(buffer)
+
+                val node = ModelNode(
+                    modelInstance = modelInstance,
+                    scaleToUnits = 1.0f,            // ✅ FIX
+                    centerOrigin = Position(0f)     // ✅ FIX
+                ).apply {
+                    position = Position(0f, 0f, 0f)
+                    rotation = Rotation(y = rotationAngle)
                 }
-            ),
 
-            // Touch Event Handling
-            onTouchEvent = { _: MotionEvent, _: HitResult? ->
-                false  // Return false to allow camera manipulation
-            },
+                loadedModelNode.value = node
+                onChangeModelNode(node)
+                add(node)
 
-            // Frame Update - Apply Transformations Every Frame
-            onFrame = { _ ->
-                loadedModelNode.value?.let { node ->
-                    // Update rotation
-                    val newRotationAngle = rotationAngle + rotationSpeed * 0.016f  // Smooth rotation (60fps)
-                    onChangeRotationAngle(newRotationAngle)
-
-                    node.rotation = Rotation(y = newRotationAngle)
-
-                    // Update scale/zoom
-                    node.scale = Scale(
-                        x = zoomScale,
-                        y = zoomScale,
-                        z = zoomScale
-                    )
-                }
+            } catch (e: Exception) {
+                Log.e("SceneView", "Model load failed", e)
             }
-        )
-    }
+        },
+
+        // ❌ NO SCALING GESTURES
+        onGestureListener = rememberOnGestureListener(),
+
+        onTouchEvent = { _, _ -> false },
+
+        // Rotation ONLY (no scale here)
+        onFrame = {
+            loadedModelNode.value?.let { node ->
+                val newAngle = rotationAngle + rotationSpeed * 0.016f
+                onChangeRotationAngle(newAngle)
+                node.rotation = Rotation(y = newAngle)
+            }
+        }
+    )
+}

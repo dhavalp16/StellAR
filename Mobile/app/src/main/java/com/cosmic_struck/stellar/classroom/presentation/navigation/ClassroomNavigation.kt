@@ -40,7 +40,7 @@ fun NavGraphBuilder.classroomGraph(navHostController: NavHostController){
         }
 
         composable(
-            route = ClassroomScreens.ClassroomModelScreen.route
+            route = ClassroomScreens.ClassroomModuleScreen.route
         ){
             val entry = remember(it) {
                 navHostController.getBackStackEntry("classroom_graph/{classroom_id}")
@@ -51,5 +51,5 @@ fun NavGraphBuilder.classroomGraph(navHostController: NavHostController){
 
 private sealed class ClassroomScreens(val route: String){
     object ClassroomHomeScreen : ClassroomScreens("classroom_home_screen")
-    object ClassroomModelScreen : ClassroomScreens("classroom_model_screen")
+    object ClassroomModuleScreen : ClassroomScreens("classroom_module_screen")
 }

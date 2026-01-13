@@ -16,10 +16,9 @@ data class ModelHomeScreenState(
 
 data class ModelViewScreenState(
     val rotationSpeed: Float = 0.5f,
-    val zoomScale: Float = 0.5f,
-    val cameraDistance: Float = 3.0f,
-    val modelNode: ModelNode? = null,
+    val cameraDistance: Float = 3.5f,
     val rotationAngle: Float = 0f,
+    val modelNode: ModelNode? = null,
     val modelTitle: String = "",
     val isLoadingModel: Boolean = false,
     val modelError: String = "",
