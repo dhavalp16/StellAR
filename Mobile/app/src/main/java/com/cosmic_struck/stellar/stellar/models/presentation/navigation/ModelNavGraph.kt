@@ -27,6 +27,7 @@ fun NavGraphBuilder.modelNavGraph(navHostController: NavHostController) {
                 navHostController.getBackStackEntry("model_graph")
             }
             ModelScreen(
+                navController = navHostController,
                 navigateToModelViewer = {it1,it2->
                     val encodeUrl = Uri.encode(it1)
                     navHostController.navigate(StellarModelScreen.ModelScreen.route + "/$encodeUrl/$it2")
@@ -48,7 +49,7 @@ fun NavGraphBuilder.modelNavGraph(navHostController: NavHostController) {
     }
 }
 
-private sealed class StellarModelScreen(val route: String) {
+sealed class StellarModelScreen(val route: String) {
     object HomeScreen : StellarModelScreen("home_screen")
     object ModelScreen : StellarModelScreen("model_screen")
 }

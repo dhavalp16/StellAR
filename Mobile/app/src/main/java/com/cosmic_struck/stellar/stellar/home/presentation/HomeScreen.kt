@@ -16,6 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.cosmic_struck.stellar.common.components.BackgroundScaffold
 import com.cosmic_struck.stellar.common.components.BottomAppBar
+import com.cosmic_struck.stellar.common.components.SimpleTopAppBar
 import com.cosmic_struck.stellar.common.util.HomeScreenCaptions2
 import com.cosmic_struck.stellar.stellar.home.presentation.components.BottomCaptions
 import com.cosmic_struck.stellar.stellar.home.presentation.components.ScanButton
@@ -30,6 +31,14 @@ fun StellarHomeScreen(
     BackgroundScaffold(
         bottomBar = {
             BottomAppBar(navHostController)
+        },
+        topBar = {
+            SimpleTopAppBar(
+                title = "Stellar",
+                popNavigation = {
+                    navHostController.popBackStack()
+                }
+            )
         }
     ) {
         Box(

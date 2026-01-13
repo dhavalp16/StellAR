@@ -15,7 +15,7 @@ import com.cosmic_struck.stellar.create_module.presentation.navigation.createMod
 import com.cosmic_struck.stellar.history.home.HistoryHomeScreen
 import com.cosmic_struck.stellar.home.presentation.screens.HomeScreen
 import com.cosmic_struck.stellar.physics.home.PhysicsHomeScreen
-import com.cosmic_struck.stellar.stellar.arlab.presentation.ARLabScreen
+import com.cosmic_struck.stellar.stellar.arlab.presentation.navigation.arLabNavigation
 import com.cosmic_struck.stellar.stellar.home.presentation.StellarHomeScreen
 import com.cosmic_struck.stellar.stellar.models.presentation.navigation.modelNavGraph
 import com.cosmic_struck.stellar.stellar.scantext.presentation.navigation.scanImageGraph
@@ -47,9 +47,6 @@ fun MainNavGraph(
                     )
             }
 
-            composable(route = Screens.ARLabScreen.route){
-                ARLabScreen()
-            }
 
             composable(route = Screens.StellarHomeScreen.route){
                 StellarHomeScreen(
@@ -73,7 +70,7 @@ fun MainNavGraph(
             composable(route = Screens.HistoryHomeScreen.route){
                 HistoryHomeScreen()
             }
-
+            arLabNavigation(navHostController)
             authGraph(navHostController)
             scanImageGraph(navHostController)
             modelNavGraph(navHostController)

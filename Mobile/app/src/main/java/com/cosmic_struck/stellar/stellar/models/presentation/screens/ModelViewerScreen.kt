@@ -27,9 +27,9 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.cosmic_struck.stellar.R
 import com.cosmic_struck.stellar.common.components.BackgroundScaffold
+import com.cosmic_struck.stellar.common.components.SimpleTopAppBar
 import com.cosmic_struck.stellar.stellar.models.presentation.components.ARModelSceneView
 import com.cosmic_struck.stellar.stellar.models.presentation.components.BottomSheetControlPanel
-import com.cosmic_struck.stellar.stellar.models.presentation.components.ModelViewerTopAppBar
 import com.cosmic_struck.stellar.stellar.models.presentation.components.SceneView
 import com.cosmic_struck.stellar.stellar.models.presentation.viewmodel.ModelViewScreenViewModel
 import com.cosmic_struck.stellar.stellar.models.presentation.viewmodel.SceneType
@@ -50,9 +50,9 @@ fun ModelViewerScreen(
 
     BackgroundScaffold(
         topBar = {
-            ModelViewerTopAppBar(
-                onNavigateBack = navigateBack,
-                name = state.modelTitle
+            SimpleTopAppBar(
+                title = state.modelTitle,
+                popNavigation = navigateBack
             )
         }
     ) {

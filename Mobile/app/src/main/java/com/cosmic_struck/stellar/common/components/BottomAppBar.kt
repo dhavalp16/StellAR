@@ -1,17 +1,13 @@
 package com.cosmic_struck.stellar.common.components
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.navigationBarsIgnoringVisibility
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -24,27 +20,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.cosmic_struck.stellar.R
 import com.cosmic_struck.stellar.common.navigation.Screens
 import com.cosmic_struck.stellar.common.util.Rajdhani
+import com.cosmic_struck.stellar.stellar.arlab.presentation.navigation.ARLabNavigationScreens
+import com.cosmic_struck.stellar.stellar.models.presentation.navigation.StellarModelScreen
 import com.cosmic_struck.stellar.ui.theme.BackgroundPrimary
-import com.cosmic_struck.stellar.ui.theme.Blue4
 import com.cosmic_struck.stellar.ui.theme.Blue5
-import com.cosmic_struck.stellar.ui.theme.DarkBlue2
 import com.cosmic_struck.stellar.ui.theme.Grey1
 
 data class BottomAppBarItems(
     val title: String,
     val route: String,
+    val secondRoute: String,
     @DrawableRes val image: Int
 )
 
@@ -52,17 +46,20 @@ val bottomAppBarItems = listOf(
     BottomAppBarItems(
         title = "Home",
         route = Screens.StellarHomeScreen.route,
-        image = R.drawable.vector
+        image = R.drawable.vector,
+        secondRoute = Screens.StellarHomeScreen.route
     ),
     BottomAppBarItems(
         title = "Models",
         route = "model_graph",
-        image = R.drawable.db
+        image = R.drawable.db,
+        secondRoute = StellarModelScreen.HomeScreen.route
     ),
     BottomAppBarItems(
         title = "AR Lab",
-        route = Screens.ARLabScreen.route,
-        image = R.drawable.beaker
+        route = "ar_lab_navigation",
+        image = R.drawable.beaker,
+        secondRoute = ARLabNavigationScreens.ARLabHomeScreen.route
     )
 )
 
@@ -80,9 +77,10 @@ fun BottomAppBar(navController: NavController){
     ) {
         val navBackStackEntry = navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry.value?.destination?.route
+        Log.d("Route Checking",currentRoute.toString())
         bottomAppBarItems.forEach { item ->
             NavigationBarItem(
-                selected = currentRoute == item.route,
+                selected = currentRoute == item.secondRoute,
                 onClick = {
                     navController.navigate(item.route) {
                         popUpTo(navController.graph.startDestinationId) {

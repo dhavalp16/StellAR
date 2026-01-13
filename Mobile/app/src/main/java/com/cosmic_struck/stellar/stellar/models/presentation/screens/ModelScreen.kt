@@ -23,7 +23,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.cosmic_struck.stellar.common.components.BackgroundScaffold
+import com.cosmic_struck.stellar.common.components.BottomAppBar
+import com.cosmic_struck.stellar.common.components.SimpleTopAppBar
 import com.cosmic_struck.stellar.common.components.TabSwitcher
 import com.cosmic_struck.stellar.stellar.models.presentation.components.ModelTopAppBar
 import com.cosmic_struck.stellar.stellar.models.presentation.components.ScoreRow
@@ -33,6 +36,7 @@ import com.cosmic_struck.stellar.stellar.models.presentation.viewmodel.ModelScre
 
 @Composable
 fun ModelScreen(
+    navController: NavController,
     navigateToModelViewer: (String,String) -> Unit,
     viewModel: ModelScreenViewModel = hiltViewModel<ModelScreenViewModel>(),
     modifier: Modifier = Modifier
@@ -41,6 +45,11 @@ fun ModelScreen(
     BackgroundScaffold(
         topBar = {
             ModelTopAppBar()
+        },
+        bottomBar = {
+            BottomAppBar(
+                navController = navController
+            )
         }
     ) {
         Column(
