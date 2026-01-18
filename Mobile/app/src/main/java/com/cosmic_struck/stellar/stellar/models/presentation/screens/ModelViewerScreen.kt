@@ -26,7 +26,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.cosmic_struck.stellar.R
-import com.cosmic_struck.stellar.common.components.BackgroundScaffold
+import com.cosmic_struck.stellar.common.components.StellarScaffold
 import com.cosmic_struck.stellar.common.components.SimpleTopAppBar
 import com.cosmic_struck.stellar.stellar.models.presentation.components.ARModelSceneView
 import com.cosmic_struck.stellar.stellar.models.presentation.components.BottomSheetControlPanel
@@ -48,7 +48,7 @@ fun ModelViewerScreen(
 ) {
     val state = viewModel.state.value
 
-    BackgroundScaffold(
+    StellarScaffold(
         topBar = {
             SimpleTopAppBar(
                 title = state.modelTitle,

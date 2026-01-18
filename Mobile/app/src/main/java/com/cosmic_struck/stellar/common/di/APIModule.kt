@@ -1,5 +1,6 @@
 package com.cosmic_struck.stellar.common.di
 
+import com.cosmic_struck.stellar.classroom.data.service.ClassroomModuleService
 import com.cosmic_struck.stellar.stellar.scantext.data.remote.ScanService
 import dagger.Module
 import dagger.Provides
@@ -33,5 +34,16 @@ object APIModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ScanService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideClassroomModuleService(okHttpClient: OkHttpClient): ClassroomModuleService {
+        return Retrofit.Builder()
+            .baseUrl("http://192.168.1.3:5000")
+            .client(provideOkHttpClient())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ClassroomModuleService::class.java)
     }
 }

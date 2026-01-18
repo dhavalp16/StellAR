@@ -16,6 +16,9 @@ import com.cosmic_struck.stellar.home.domain.usecases.JoinClassroomUseCase
 import com.cosmic_struck.stellar.home.presentation.ClassroomJoinStatus
 import com.cosmic_struck.stellar.home.presentation.HomeScreenState
 import com.cosmic_struck.stellar.home.presentation.Options
+import com.cosmic_struck.stellar.home.domain.usecases.UpdateUserProfilePictureUseCase
+import android.content.Context
+import android.net.Uri
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
@@ -31,7 +34,8 @@ class HomeScreenViewModel @Inject constructor(
     private val joinClassroomUseCase: JoinClassroomUseCase,
     private val supabaseClient: SupabaseClient,
     private val savedStateHandle: SavedStateHandle,
-    private val getUserCreatedClassroom: GetUserCreatedClassroom
+    private val getUserCreatedClassroom: GetUserCreatedClassroom,
+    private val updateUserProfilePictureUseCase: UpdateUserProfilePictureUseCase
 ): ViewModel() {
 
     private val _state = MutableStateFlow(HomeScreenState())
@@ -168,4 +172,35 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
+    fun updateProfilePicture(uri: Uri, context: Context) {
+        viewModelScope.launch {
+            try {
+                val userId = supabaseClient.auth.retrieveUserForCurrentSession().id
+                updateUserProfilePictureUseCase(userId, uri, context).collect { result ->
+                    when (result) {
+                        is Resource.Loading -> _state.value = _state.value.copy(isLoading = true)
+                        is Resource.Success -> {
+                            // Append timestamp to force refresh the image in UI
+                            val freshUrl = (result.data ?: "") + "?t=${System.currentTimeMillis()}"
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                profile = freshUrl
+                            )
+                        }
+                        is Resource.Error -> {
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                error = result.message
+                            )
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    error = e.message
+                )
+            }
+        }
+    }
 }

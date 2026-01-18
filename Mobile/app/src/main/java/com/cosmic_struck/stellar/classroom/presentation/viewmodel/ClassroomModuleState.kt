@@ -1,13 +1,16 @@
 package com.cosmic_struck.stellar.classroom.presentation.viewmodel
 
-data class ClassroomModuleState(
-    val module_name: String = "",
-    val module_id: Int? = null,
-    val pdf_url : String = "",
-    val model_url : String = "",
+import com.cosmic_struck.stellar.classroom.data.dto.ClassroomModule
+import com.cosmic_struck.stellar.classroom.data.dto.ClassroomModule1
+import com.cosmic_struck.stellar.classroom.data.dto.ProcessResponse
 
-    val pdf_path: String = "",
+data class ClassroomModuleState(
+    val module_id: Long? = null,
+    val module: ClassroomModule1? = null,
     val model_path : String = "",
+    val pdf_path : String = "",
     val isLoading : Boolean = false,
-    val error : String = ""
+    val moduleError : String = "",
+    val processError : String = "",
+    val processInfo: ProcessResponse? = null,
 )

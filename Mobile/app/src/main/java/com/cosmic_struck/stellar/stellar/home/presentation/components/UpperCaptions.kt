@@ -4,15 +4,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -22,39 +24,41 @@ import com.cosmic_struck.stellar.common.util.Rajdhani
 
 @Composable
 fun UpperCaptions(modifier: Modifier = Modifier) {
-    Box(
-        modifier = Modifier
-            .fillMaxHeight(0.2f)
-            .fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ){
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "🚀 StellAR",
-                color = Color.White,
-                fontFamily = Rajdhani,
-                fontWeight = FontWeight.Bold, // or FontWeight.W700
-                fontSize = 40.sp
-            )
-            Spacer(modifier = Modifier.height(30.dp))
-            Text(
-                text = HomeScreenCaptions,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth(0.8f),
-                color = Color.White,
-                fontFamily = Rajdhani,
-                fontWeight = FontWeight.Normal, // or FontWeight.W700
-                autoSize = TextAutoSize.StepBased(
-                    minFontSize = 16.sp,
-                    maxFontSize = 24.sp,
-                    stepSize = 1.sp
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        // Glowing Title
+        Text(
+            text = "🚀 StellAR",
+            style = TextStyle(
+                shadow = Shadow(
+                    color = Color(0xFF00E5FF),
+                    offset = Offset(0f, 0f),
+                    blurRadius = 32f
                 )
-            )
-        }
+            ),
+            color = Color.White,
+            fontFamily = Rajdhani,
+            fontWeight = FontWeight.Bold,
+            fontSize = 56.sp,
+            textAlign = TextAlign.Center
+        )
+        
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        // Subtitle/Description
+        Text(
+            text = HomeScreenCaptions,
+            textAlign = TextAlign.Center,
+            color = Color.White.copy(alpha = 0.8f),
+            fontFamily = Rajdhani,
+            fontWeight = FontWeight.Medium,
+            fontSize = 18.sp,
+            lineHeight = 24.sp
+        )
     }
-
 }

@@ -10,6 +10,9 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.cosmic_struck.stellar.classroom.presentation.screens.ClassroomHomeScreen
+import com.cosmic_struck.stellar.classroom.presentation.screens.ClassroomModuleScreen
+import com.cosmic_struck.stellar.classroom.presentation.screens.QuizScreen
+import com.cosmic_struck.stellar.classroom.presentation.screens.SummaryScreen
 import com.cosmic_struck.stellar.classroom.presentation.viewmodel.ClassroomViewModel
 import com.cosmic_struck.stellar.common.navigation.Screens
 
@@ -31,7 +34,9 @@ fun NavGraphBuilder.classroomGraph(navHostController: NavHostController){
             }
             val viewmodel : ClassroomViewModel = hiltViewModel<ClassroomViewModel>(entry)
             ClassroomHomeScreen(
-                navigateToModelScreen = {},
+                navigateToModelScreen = {
+                    navHostController.navigate(ClassroomScreens.ClassroomModuleScreen.route)
+                },
                 viewmodel = viewmodel,
                 navigateToCreateModuleScreen = {
                     navHostController.navigate("create_module_graph/$it")
@@ -40,11 +45,51 @@ fun NavGraphBuilder.classroomGraph(navHostController: NavHostController){
         }
 
         composable(
-            route = ClassroomScreens.ClassroomModuleScreen.route
+            route = ClassroomScreens.ClassroomModuleScreen.route,
+            ){
+            val entry = remember(it) {
+                navHostController.getBackStackEntry("classroom_graph/{classroom_id}")
+            }
+            val viewmodel : ClassroomViewModel = hiltViewModel<ClassroomViewModel>(entry)
+            ClassroomModuleScreen(
+                navigateToSummaryScreen = {
+                    navHostController.navigate(ClassroomScreens.ModuleSummaryScreen.route)
+                },
+                navigateToQuizScreen = {
+                    navHostController.navigate(ClassroomScreens.QuizScreen.route)
+                },
+                viewModel = viewmodel
+            )
+        }
+
+        composable(
+            route = ClassroomScreens.ModuleSummaryScreen.route
         ){
             val entry = remember(it) {
                 navHostController.getBackStackEntry("classroom_graph/{classroom_id}")
             }
+            val viewmodel : ClassroomViewModel = hiltViewModel<ClassroomViewModel>(entry)
+            SummaryScreen(
+                onBack = {
+                    navHostController.popBackStack()
+                },
+                viewModel = viewmodel
+            )
+        }
+
+        composable(
+            route = ClassroomScreens.QuizScreen.route
+        ){
+            val entry = remember(it) {
+                navHostController.getBackStackEntry("classroom_graph/{classroom_id}")
+            }
+            val viewmodel : ClassroomViewModel = hiltViewModel<ClassroomViewModel>(entry)
+            QuizScreen(
+                backToHome = {
+                    navHostController.popBackStack()
+                },
+                viewModel = viewmodel
+            )
         }
     }
 }
@@ -52,4 +97,7 @@ fun NavGraphBuilder.classroomGraph(navHostController: NavHostController){
 private sealed class ClassroomScreens(val route: String){
     object ClassroomHomeScreen : ClassroomScreens("classroom_home_screen")
     object ClassroomModuleScreen : ClassroomScreens("classroom_module_screen")
+    object ModuleSummaryScreen : ClassroomScreens("module_summary_screen")
+    object QuizScreen : ClassroomScreens("quiz_screen")
 }
+

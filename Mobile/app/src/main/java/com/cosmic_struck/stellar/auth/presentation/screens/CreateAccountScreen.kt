@@ -1,6 +1,5 @@
 package com.cosmic_struck.stellar.auth.presentation.screens
 
-import android.graphics.drawable.Icon
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -21,20 +20,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -45,10 +47,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -60,73 +64,122 @@ import coil.compose.rememberAsyncImagePainter
 import com.cosmic_struck.stellar.R
 import com.cosmic_struck.stellar.auth.presentation.viewmodel.AuthViewModel
 import com.cosmic_struck.stellar.common.util.Rajdhani
-import com.cosmic_struck.stellar.ui.theme.Blue5
+
+// Educational Theme Colors
+private val EduPrimary = Color(0xFF5C6BC0)
+private val EduBackground = Color(0xFFF8F9FE)
+private val EduSurface = Color(0xFFFFFFFF)
+private val EduTextPrimary = Color(0xFF1A1A2E)
+private val EduTextSecondary = Color(0xFF6B7280)
+private val EduSuccess = Color(0xFF4CAF50)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateAccountScreenEmailValidation(
-    navigateback : () -> Unit = {},
+    navigateback: () -> Unit = {},
     setImageUri: (Uri?) -> Unit,
     navigateToPasswordValidation: () -> Unit = {},
     viewModel: AuthViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier) {
+    modifier: Modifier = Modifier
+) {
+    var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    
+    val emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-z]+$"
+    val isEmailValid = email.matches(emailPattern.toRegex())
+    val isUsernameValid = username.length >= 3
+    val isFormValid = isEmailValid && isUsernameValid
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        selectedImageUri = uri
+        setImageUri(uri)
+    }
+
     Scaffold(
+        containerColor = EduBackground,
         topBar = {
-            LargeTopAppBar(
-                title = {
-                    Text(
-                        text = "Add Your Email",
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        maxLines = 1
-                    )
-                },
+            TopAppBar(
+                title = {},
                 navigationIcon = {
-                    IconButton(
-                        onClick = {navigateback()}
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.back),
-                            contentDescription = null
-                        )
+                    IconButton(onClick = navigateback) {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(Color.White),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.back),
+                                contentDescription = "Back",
+                                tint = EduTextPrimary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
+                )
             )
         }
-    ) {it->
-
-        val email = remember { mutableStateOf("") }
-        val activeButton = remember { mutableStateOf(false) }
-        val emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-z]+$"
-        var username by remember { mutableStateOf("") }
-        val context = LocalContext.current
-        var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-
-        val imagePickerLauncher =
-            rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.GetContent()
-            ) { uri ->
-                selectedImageUri = uri
-                setImageUri(uri)
-            }
-
-
+    ) { paddingValues ->
         Box(
             modifier = Modifier
-                .padding(it)
-        ){
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFFF8F9FE),
+                            Color(0xFFE8EAF6)
+                        )
+                    )
+                )
+        ) {
             Column(
                 modifier = Modifier
+                    .padding(paddingValues)
                     .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Header
+                Text(
+                    text = "Create Account 🎓",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = Rajdhani,
+                    color = EduTextPrimary
+                )
 
+                Text(
+                    text = "Step 1: Your Profile",
+                    fontSize = 14.sp,
+                    color = EduTextSecondary,
+                    fontFamily = Rajdhani,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Profile Image Picker
                 Box(
                     modifier = Modifier
-                        .size(96.dp)
-                        .align(Alignment.CenterHorizontally)
+                        .size(120.dp)
                         .clip(CircleShape)
-                        .background(Color.LightGray)
+                        .background(
+                            Brush.linearGradient(
+                                colors = listOf(
+                                    EduPrimary.copy(alpha = 0.2f),
+                                    Color(0xFF7E57C2).copy(alpha = 0.2f)
+                                )
+                            )
+                        )
+                        .border(3.dp, EduPrimary, CircleShape)
                         .clickable { imagePickerLauncher.launch("image/*") },
                     contentAlignment = Alignment.Center
                 ) {
@@ -138,107 +191,130 @@ fun CreateAccountScreenEmailValidation(
                             modifier = Modifier.fillMaxSize()
                         )
                     } else {
-                        Icon(
-                            painter = painterResource(R.drawable.twotone_android_24),
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(48.dp)
-                        )
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(text = "📷", fontSize = 32.sp)
+                            Text(
+                                text = "Add Photo",
+                                fontSize = 12.sp,
+                                color = EduPrimary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                     }
                 }
 
-                Text(
-                    text = "User Name",
-                    modifier = Modifier
-                        .padding(start = 16.dp),
-                    textAlign = TextAlign.Start,
-                    fontFamily = Rajdhani,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                OutlinedTextField(
-                    value = username,
-                    onValueChange = {
-                        username = it
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .clip(RoundedCornerShape(24.dp))
-                        .border(1.dp, Color.Gray, RoundedCornerShape(24.dp)),
-                    placeholder = {
-                        Text(
-                            text = "Abc",
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Username Field
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Username",
+                        color = EduTextPrimary,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = Rajdhani,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    OutlinedTextField(
+                        value = username,
+                        onValueChange = { username = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = {
+                            Text(
+                                text = "Choose a username",
+                                color = EduTextSecondary,
+                                fontFamily = Rajdhani
+                            )
+                        },
+                        textStyle = TextStyle(
+                            color = EduTextPrimary,
                             fontFamily = Rajdhani,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Light
-                        )
-                    }
-                )
+                            fontSize = 16.sp
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = EduPrimary,
+                            unfocusedBorderColor = Color(0xFFE0E0E0),
+                            focusedContainerColor = EduSurface,
+                            unfocusedContainerColor = EduSurface,
+                            cursorColor = EduPrimary
+                        ),
+                        shape = RoundedCornerShape(16.dp),
+                        singleLine = true,
+                        leadingIcon = {
+                            Text(text = "👤", fontSize = 18.sp)
+                        }
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = "Email",
-                    modifier = Modifier
-                        .padding(start = 16.dp),
-                    textAlign = TextAlign.Start,
-                    fontFamily = Rajdhani,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
 
-                OutlinedTextField(
-                    value = email.value,
-                    onValueChange = {
-                        email.value = it
-
-                        if (email.value.matches(emailPattern.toRegex()))
-                            activeButton.value = true
-                        else
-                            activeButton.value = false
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .clip(RoundedCornerShape(24.dp))
-                        .border(1.dp, Color.Gray, RoundedCornerShape(24.dp)),
-                    placeholder = {
-                        Text(
-                            text = "example@example",
+                // Email Field
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Email Address",
+                        color = EduTextPrimary,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = Rajdhani,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = {
+                            Text(
+                                text = "Enter your email",
+                                color = EduTextSecondary,
+                                fontFamily = Rajdhani
+                            )
+                        },
+                        textStyle = TextStyle(
+                            color = EduTextPrimary,
                             fontFamily = Rajdhani,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Light
-                        )
-                    }
-                )
+                            fontSize = 16.sp
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = EduPrimary,
+                            unfocusedBorderColor = Color(0xFFE0E0E0),
+                            focusedContainerColor = EduSurface,
+                            unfocusedContainerColor = EduSurface,
+                            cursorColor = EduPrimary
+                        ),
+                        shape = RoundedCornerShape(16.dp),
+                        singleLine = true,
+                        leadingIcon = {
+                            Text(text = "📧", fontSize = 18.sp)
+                        }
+                    )
+                }
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
+                // Continue Button
                 Button(
                     onClick = {
-                        viewModel.setEmailAddress(
-                            email.value
-                        )
-                        viewModel.setUsername(
-                            username
-                        )
+                        viewModel.setEmailAddress(email)
+                        viewModel.setUsername(username)
                         navigateToPasswordValidation()
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .clip(shape = RoundedCornerShape(24.dp)),
+                        .height(56.dp),
+                    enabled = isFormValid,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Blue5,
-                        contentColor = Color.White,
-                        disabledContainerColor = Blue5.copy(alpha = 0.6f),
-                        disabledContentColor = Color.White.copy(0.6f)
+                        containerColor = EduPrimary,
+                        disabledContainerColor = EduPrimary.copy(alpha = 0.5f)
                     ),
-                    enabled = activeButton.value
+                    shape = RoundedCornerShape(16.dp)
                 ) {
                     Text(
                         text = "Continue",
                         fontFamily = Rajdhani,
-                        fontSize = 16.sp
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
                     )
                 }
             }
@@ -249,21 +325,18 @@ fun CreateAccountScreenEmailValidation(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateAccountScreenPasswordValidation(
-    navigateback: ()-> Unit = {},
+    navigateback: () -> Unit = {},
     navigateToHomeScreen: () -> Unit = {},
     viewModel: AuthViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
-    // 1. State Management
     var password by remember { mutableStateOf("") }
     var isVisible by remember { mutableStateOf(false) }
 
-    // 2. Validation Logic (Computed automatically when password changes)
     val hasMinLength = password.length >= 8
     val hasNumber = password.contains(Regex("[0-9]"))
     val hasSymbol = password.contains(Regex("[!@#$%^&*(),.?\":{}|<>]"))
 
-    // 3. Progress & Color Logic
     val checksPassed = listOf(hasMinLength, hasNumber, hasSymbol).count { it }
     val progressTarget = when (checksPassed) {
         1 -> 0.33f
@@ -273,11 +346,11 @@ fun CreateAccountScreenPasswordValidation(
     }
 
     val animatedProgress by animateFloatAsState(targetValue = progressTarget, label = "progress")
-    val traceColor by animateColorAsState(
+    val progressColor by animateColorAsState(
         targetValue = when (checksPassed) {
-            3 -> Color.Green
-            2 -> Color.Yellow
-            1 -> Color.Red
+            3 -> EduSuccess
+            2 -> Color(0xFFFFA726)
+            1 -> Color(0xFFEF5350)
             else -> Color.Gray
         }, label = "color"
     )
@@ -285,107 +358,234 @@ fun CreateAccountScreenPasswordValidation(
     val state = viewModel.state.collectAsState().value
 
     LaunchedEffect(state.success) {
-        if(state.success){
-            Log.d("Launched Effect","Launched Effect Triggered")
+        if (state.success) {
+            Log.d("CreateAccount", "Account created successfully")
             navigateToHomeScreen()
         }
     }
 
     Scaffold(
+        containerColor = EduBackground,
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Create Your Password", fontFamily = Rajdhani) },
+            TopAppBar(
+                title = {},
                 navigationIcon = {
-                    IconButton(
-                        onClick = {navigateback()}
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.back),
-                            contentDescription = null
-                        )
+                    IconButton(onClick = navigateback) {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(Color.White),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.back),
+                                contentDescription = "Back",
+                                tint = EduTextPrimary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
+                )
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFFF8F9FE),
+                            Color(0xFFE8EAF6)
+                        )
+                    )
+                )
         ) {
-            Text(
-                text = "Password",
-                fontFamily = Rajdhani,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp), // Correct way to round OutlinedTextField
-                placeholder = { Text("abc123@#$", fontWeight = FontWeight.Light) },
-                visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    val icon = if (isVisible) R.drawable.eye else R.drawable.eye
-                    IconButton(onClick = { isVisible = !isVisible }) {
-                        Icon(painter = painterResource(id = icon), contentDescription = "Toggle Visibility")
-                    }
-                },
-                singleLine = true
-            )
-
-            LinearProgressIndicator(
-                progress = { animatedProgress },
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp)
-                    .clip(RoundedCornerShape(4.dp)),
-                color = traceColor,
-                trackColor = Color.LightGray.copy(alpha = 0.3f)
-            )
-
-            // Validation Checklist
-            ValidationRow(label = "8 Characters Minimum", isValid = hasMinLength)
-            ValidationRow(label = "A Number", isValid = hasNumber)
-            ValidationRow(label = "A Symbol", isValid = hasSymbol)
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Button(
-                onClick = {
-                    viewModel.setPassword(password)
-                    viewModel.signUpWithEmail()
-                },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                shape = RoundedCornerShape(24.dp),
-                enabled = checksPassed == 3,
-                colors = ButtonDefaults.buttonColors(containerColor = Blue5)
+                    .padding(paddingValues)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp)
             ) {
-                Text("Continue", fontFamily = Rajdhani, fontSize = 16.sp)
+                // Header
+                Text(
+                    text = "Secure Password 🔐",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = Rajdhani,
+                    color = EduTextPrimary
+                )
+
+                Text(
+                    text = "Step 2: Create a strong password",
+                    fontSize = 14.sp,
+                    color = EduTextSecondary,
+                    fontFamily = Rajdhani,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+
+                Spacer(modifier = Modifier.height(40.dp))
+
+                // Password Field
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Password",
+                        color = EduTextPrimary,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = Rajdhani,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = {
+                            Text(
+                                text = "Create a password",
+                                color = EduTextSecondary,
+                                fontFamily = Rajdhani
+                            )
+                        },
+                        textStyle = TextStyle(
+                            color = EduTextPrimary,
+                            fontFamily = Rajdhani,
+                            fontSize = 16.sp
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = EduPrimary,
+                            unfocusedBorderColor = Color(0xFFE0E0E0),
+                            focusedContainerColor = EduSurface,
+                            unfocusedContainerColor = EduSurface,
+                            cursorColor = EduPrimary
+                        ),
+                        shape = RoundedCornerShape(16.dp),
+                        singleLine = true,
+                        visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        leadingIcon = {
+                            Text(text = "🔒", fontSize = 18.sp)
+                        },
+                        trailingIcon = {
+                            IconButton(onClick = { isVisible = !isVisible }) {
+                                Text(
+                                    text = if (isVisible) "👁️" else "👁️‍🗨️",
+                                    fontSize = 18.sp
+                                )
+                            }
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Progress Bar
+                LinearProgressIndicator(
+                    progress = { animatedProgress },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp)
+                        .clip(RoundedCornerShape(4.dp)),
+                    color = progressColor,
+                    trackColor = Color(0xFFE0E0E0)
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Validation Checklist
+                ValidationRow(
+                    label = "At least 8 characters",
+                    isValid = hasMinLength
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                ValidationRow(
+                    label = "Contains a number",
+                    isValid = hasNumber
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                ValidationRow(
+                    label = "Contains a symbol (!@#$%)",
+                    isValid = hasSymbol
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                // Create Account Button
+                Button(
+                    onClick = {
+                        viewModel.setPassword(password)
+                        viewModel.signUpWithEmail()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    enabled = checksPassed == 3,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = EduSuccess,
+                        disabledContainerColor = EduSuccess.copy(alpha = 0.5f)
+                    ),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Create Account",
+                            fontFamily = Rajdhani,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "🚀", fontSize = 18.sp)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
             }
         }
     }
 }
 
 @Composable
-fun ValidationRow(label: String, isValid: Boolean) {
+private fun ValidationRow(label: String, isValid: Boolean) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(
+                if (isValid) EduSuccess.copy(alpha = 0.1f) 
+                else Color(0xFFE0E0E0).copy(alpha = 0.5f)
+            )
+            .padding(12.dp)
     ) {
-        Checkbox(
-            checked = isValid,
-            onCheckedChange = null // Keep it read-only
-        )
+        Box(
+            modifier = Modifier
+                .size(24.dp)
+                .clip(CircleShape)
+                .background(if (isValid) EduSuccess else Color.Gray),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = if (isValid) "✓" else "",
+                color = Color.White,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
         Text(
             text = label,
             fontFamily = Rajdhani,
             fontSize = 14.sp,
-            color = if (isValid) Color.Unspecified else Color.Gray
+            color = if (isValid) EduSuccess else EduTextSecondary,
+            fontWeight = if (isValid) FontWeight.Medium else FontWeight.Normal
         )
     }
 }

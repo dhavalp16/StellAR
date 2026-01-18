@@ -37,8 +37,8 @@ class DownloadFile @Inject constructor(
             if (!appPrivateDir.exists()) {
                 appPrivateDir.mkdirs()
             }
-
-            val targetFile = File(appPrivateDir, "$title.glb")
+            val fileName = buildFileName(url,title)
+            val targetFile = File(appPrivateDir, fileName)
 
             // Check if file already exists
             if (targetFile.exists() && targetFile.length() > 0) {
@@ -101,6 +101,23 @@ class DownloadFile @Inject constructor(
             emit(Resource.Error(e.message ?: "Unknown error occurred"))
         }
     }.flowOn(Dispatchers.IO)  // Run on IO thread
+
+    private fun buildFileName(url: String, title: String): String {
+        // If title already has an extension, respect it
+        if (title.contains('.') && title.substringAfterLast('.').length in 2..5) {
+            return title
+        }
+
+        // Try extracting extension from URL
+        val cleanUrl = url.substringBefore('?').substringBefore('#')
+        val extension = cleanUrl.substringAfterLast('.', missingDelimiterValue = "")
+
+        return if (extension.isNotEmpty() && extension.length in 2..5) {
+            "$title.$extension"
+        } else {
+            title // fallback: no extension found
+        }
+    }
 
     private fun isNetworkAvailable(): Boolean {
         try {

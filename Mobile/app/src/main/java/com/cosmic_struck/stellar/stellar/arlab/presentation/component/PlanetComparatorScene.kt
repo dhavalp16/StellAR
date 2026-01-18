@@ -1,5 +1,6 @@
 package com.cosmic_struck.stellar.stellar.arlab.presentation.component
 
+import android.util.Log
 import android.view.MotionEvent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -78,6 +79,7 @@ fun ARPlanetComparatorScene(
                     planet: PlanetComparatorModel,
                     x: Float
                 ): ModelNode {
+                    Log.d("Planet Model Path","$${planet.modelPath}")
                     return ModelNode(
                         modelInstance = modelLoader.createModelInstance(
                             planet.modelPath

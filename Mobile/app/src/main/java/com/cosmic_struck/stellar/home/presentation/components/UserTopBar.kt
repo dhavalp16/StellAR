@@ -2,20 +2,25 @@ package com.cosmic_struck.stellar.home.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -26,67 +31,113 @@ import com.cosmic_struck.stellar.common.util.Rajdhani
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil.CoilImage
 
+// Educational Theme Colors
+private val EduPrimary = Color(0xFF5C6BC0)
+private val EduTextPrimary = Color(0xFF1A1A2E)
+private val EduTextSecondary = Color(0xFF6B7280)
+
 @Composable
 fun UserTopBar(
-    userName: String = "Lalit",
-    userLevel: String = "21",
-    userPic: String = "https://imgs.search.brave.com/i8w7QWmSRvY3mC70TNOOunvd8yPkGXNaD96UI-8G_Jc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdGVlenku/Y29tL3N5c3RlbS9y/ZXNvdXJjZXMvdGh1/bWJuYWlscy8wNTYv/MzkxLzg1NC9zbWFs/bC9wcm9maWxlLXZp/ZXctb2YtYS15b3Vu/Zy1tYW4taW4tbWlu/aW1hbC1pbGx1c3Ry/YXRpb24tc3R5bGUt/YXJ0LXZlY3Rvci5q/cGc",
+    userName: String = "Student",
+    userLevel: String = "1",
+    userPic: String = "",
+    onProfileClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .statusBarsPadding()
-            .padding(horizontal = 10.dp)
-            .padding(bottom = 20.dp)// Added padding for better spacing
+            .padding(horizontal = 20.dp)
+            .padding(top = 12.dp, bottom = 24.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-//            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween // Pushes text to left, image to right
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Text Column (Left Side)
+            // Left: User Info
             Column(
-                modifier = Modifier.weight(1f) // Takes up remaining space but leaves room for image
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Hello, $userName", // Added "Hello, " for friendlier UI
+                    text = "Hello, $userName 👋",
                     fontFamily = Rajdhani,
-                    fontSize = 28.sp, // Slightly larger for header impact
+                    fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
+                    color = EduTextPrimary
                 )
 
-                Text(
-                    text = "Level $userLevel Explorer", // Added context to the number
-                    fontFamily = Rajdhani,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = 4.dp)
+                ) {
+                    // Level badge
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(
+                                Brush.linearGradient(
+                                    colors = listOf(EduPrimary, Color(0xFF7E57C2))
+                                )
+                            )
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "⭐ Level $userLevel",
+                            fontFamily = Rajdhani,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = "Explorer",
+                        fontFamily = Rajdhani,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = EduTextSecondary
+                    )
+                }
             }
 
-            // User Image (Right Side)
-            CoilImage(
-                imageModel = { userPic },
-                imageOptions = ImageOptions(
-                    contentScale = ContentScale.Fit,
-                    alignment = Alignment.Center
-                ),
+            // Right: Profile Picture - Clickable
+            Box(
                 modifier = Modifier
-                    .size(70.dp) // Fixed size for the profile picture
+                    .size(56.dp)
                     .clip(CircleShape)
-                    .background(color = Color.Gray)
-                    .border(
-                        width = 2.dp,
-                        color = Color(0xFFD0BCFF), // Light purple border to match theme
-                        shape = CircleShape
+                    .clickable { onProfileClick() }
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(EduPrimary, Color(0xFF7E57C2))
+                        )
                     )
-            )
+                    .padding(3.dp)
+            ) {
+                CoilImage(
+                    imageModel = { userPic.ifEmpty { "https://ui-avatars.com/api/?name=$userName&background=5C6BC0&color=fff" } },
+                    imageOptions = ImageOptions(
+                        contentScale = ContentScale.Crop,
+                        alignment = Alignment.Center
+                    ),
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(CircleShape)
+                        .background(Color.White)
+                )
+            }
         }
     }
 }
 
 @Preview
 @Composable
-fun UserTopBarPreview(modifier: Modifier = Modifier) {
-    UserTopBar()
+fun UserTopBarPreview() {
+    UserTopBar(
+        userName = "John",
+        userLevel = "5"
+    )
 }

@@ -9,5 +9,6 @@ sealed class Screens(val route: String) {
     object BiologyHomeScreen: Screens(route = "BiologyHomeScreen")
     object ChemistryHomeScreen: Screens(route = "ChemistryHomeScreen")
     object HistoryHomeScreen: Screens(route = "HistoryHomeScreen")
+    object ProfileScreen: Screens(route = "ProfileScreen")
 
 }

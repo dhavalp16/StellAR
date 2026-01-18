@@ -2,9 +2,9 @@ package com.cosmic_struck.stellar.classroom.presentation.viewmodel.delegate
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
-import com.cosmic_struck.stellar.classroom.domain.GetClassroomDetailsUseCase
-import com.cosmic_struck.stellar.classroom.domain.GetClassroomMembersUseCase
-import com.cosmic_struck.stellar.classroom.domain.GetClassroomModelsUseCase
+import com.cosmic_struck.stellar.classroom.domain.usecase.GetClassroomDetailsUseCase
+import com.cosmic_struck.stellar.classroom.domain.usecase.GetClassroomMembersUseCase
+import com.cosmic_struck.stellar.classroom.domain.usecase.GetClassroomModelsUseCase
 import com.cosmic_struck.stellar.classroom.presentation.viewmodel.ClassroomHomeScreenState
 import com.cosmic_struck.stellar.classroom.presentation.viewmodel.Options
 import com.cosmic_struck.stellar.common.util.Resource

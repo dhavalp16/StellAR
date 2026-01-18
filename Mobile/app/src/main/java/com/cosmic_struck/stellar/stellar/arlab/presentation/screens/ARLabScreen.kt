@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.cosmic_struck.stellar.common.components.BackgroundScaffold
+import com.cosmic_struck.stellar.common.components.StellarScaffold
 import com.cosmic_struck.stellar.common.components.BottomAppBar
 import com.cosmic_struck.stellar.common.components.SimpleTopAppBar
 import com.cosmic_struck.stellar.stellar.arlab.domain.model.games
@@ -19,7 +19,7 @@ fun ARLabScreen(
     navController: NavController,
     modifier: Modifier = Modifier) {
 
-    BackgroundScaffold(
+    StellarScaffold(
         modifier = Modifier
             .fillMaxSize(),
         bottomBar = {

@@ -13,9 +13,9 @@ import androidx.compose.ui.unit.dp
 fun RectangleFrame(modifier: Modifier = Modifier) {
 
     Canvas(modifier = modifier.fillMaxSize()) {
-        val strokeWidth = 4.dp.toPx()
-        val cornerLength = 40.dp.toPx()
-        val frameColor = Color.White
+        val strokeWidth = 6.dp.toPx() // Thicker for better visibility
+        val cornerLength = 50.dp.toPx()
+        val frameColor = Color(0xFF00E5FF) // Neon Cyan
 
         // Calculate frame dimensions (e.g., 70% of the smaller screen dimension)
         val frameSize = minOf(size.width, size.height) * 0.7f

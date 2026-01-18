@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.cosmic_struck.stellar.common.components.BackgroundScaffold
+import com.cosmic_struck.stellar.common.components.StellarScaffold
 import com.cosmic_struck.stellar.stellar.scantext.presentation.components.ScanCard
 import com.cosmic_struck.stellar.stellar.scantext.presentation.components.TopBarScanTextBook
 
@@ -38,7 +38,7 @@ fun ScanResultsScreen(
     Log.d("SCAN_RESULTS_SCREEN", "Image URLs: $imageUrls")
 
 
-    BackgroundScaffold(
+    StellarScaffold(
         topBar = {
             TopBarScanTextBook(
                 title = "Scan Results",

@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.cosmic_struck.stellar.stellar.arlab.presentation.screens.ARLabScreen
 import com.cosmic_struck.stellar.stellar.arlab.presentation.screens.PlanetsComparatorScreen
+import com.cosmic_struck.stellar.stellar.arlab.universe_lab.presentation.UniverseLabScreen
 
 fun NavGraphBuilder.arLabNavigation(
     navHostController: NavHostController,
@@ -33,10 +34,21 @@ fun NavGraphBuilder.arLabNavigation(
                 }
             )
         }
+
+        composable(
+            route = ARLabNavigationScreens.UniverseLab.route
+        ) {
+            UniverseLabScreen(
+                navigateBack = {
+                    navHostController.popBackStack()
+                }
+            )
+        }
     }
 }
 
 sealed class ARLabNavigationScreens(val route: String){
     object ARLabHomeScreen : ARLabNavigationScreens("ar_lab_home_screen")
     object PlanetComparison : ARLabNavigationScreens("planet_comparison")
+    object UniverseLab : ARLabNavigationScreens("universe_lab")
 }

@@ -22,5 +22,14 @@ val games = listOf<GameModel>(
         description = "Compare two planets in AR and tap the larger one. Learn real planet sizes by exploring them in the real world.",
         route = ARLabNavigationScreens.PlanetComparison.route,
         color = Color(0xFF231942),
+    ),
+    GameModel(
+        id = 2,
+        title = "Universe Lab",
+        thumbnail = R.drawable.space_icon,
+        description = "Place a solar system in AR and watch planets orbit the Sun! Control time, observe gravity, and learn celestial mechanics.",
+        route = ARLabNavigationScreens.UniverseLab.route,
+        color = Color(0xFF1A237E),
     )
 )
+

@@ -14,6 +14,7 @@ import com.cosmic_struck.stellar.classroom.presentation.navigation.classroomGrap
 import com.cosmic_struck.stellar.create_module.presentation.navigation.createModuleNavigation
 import com.cosmic_struck.stellar.history.home.HistoryHomeScreen
 import com.cosmic_struck.stellar.home.presentation.screens.HomeScreen
+import com.cosmic_struck.stellar.home.presentation.screens.ProfileScreen
 import com.cosmic_struck.stellar.physics.home.PhysicsHomeScreen
 import com.cosmic_struck.stellar.stellar.arlab.presentation.navigation.arLabNavigation
 import com.cosmic_struck.stellar.stellar.home.presentation.StellarHomeScreen
@@ -43,8 +44,25 @@ fun MainNavGraph(
                         },
                         navigateToClassroomHomeScreen = {it->
                             navHostController.navigate("classroom_graph/$it")
+                        },
+                        navigateToProfileScreen = {
+                            navHostController.navigate(Screens.ProfileScreen.route)
                         }
                     )
+            }
+
+            composable(
+                route = Screens.ProfileScreen.route
+            ) {
+                ProfileScreen(
+                    onBack = { navHostController.popBackStack() },
+                    onLogout = {
+                        // Navigate to auth screen and clear backstack
+                        navHostController.navigate("auth") {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                )
             }
 
 

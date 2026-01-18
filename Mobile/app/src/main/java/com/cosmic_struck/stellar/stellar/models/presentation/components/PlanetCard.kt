@@ -1,18 +1,18 @@
 package com.cosmic_struck.stellar.stellar.models.presentation.components
 
 import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,8 +24,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -35,15 +36,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.skydoves.landscapist.ImageOptions
-import com.skydoves.landscapist.coil.CoilImage
 import com.cosmic_struck.stellar.R
 import com.cosmic_struck.stellar.classroom.data.dto.ClassroomModel
 import com.cosmic_struck.stellar.common.util.Rajdhani
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.coil.CoilImage
 
 val rare = Color(0xFFAD46FF)
-val common = Color(0xFFC80000)
-val secondary = Color(0xFFF0B100)
+val common = Color(0xFFFF5252)
+val secondary = Color(0xFFFFC107)
 
 @Composable
 fun PlanetCard(
@@ -53,190 +54,128 @@ fun PlanetCard(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-
+    
+    // Vertical Glassmorphic Card for Grid
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(200.dp)
-            .padding(horizontal = 5.dp)
-            .alpha(if (locked) 0.6f else 1f),
+            .clickable(enabled = !locked) {
+                if (!locked) {
+                    navigateToModelViewer(planet.model_url, planet.model_name)
+                } else {
+                    Toast.makeText(context, "Locked!", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .alpha(if (locked) 0.6f else 1f)
+            .border(
+                width = 1.dp,
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = 0.2f),
+                        Color.White.copy(alpha = 0.05f)
+                    )
+                ),
+                shape = RoundedCornerShape(20.dp)
+            ),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 1f)
+            containerColor = Color(0xFF1E2130).copy(alpha = 0.7f)
         )
     ) {
-        Box(
+        Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            Row(
+            // Top Image Section
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(min = 200.dp),
-                verticalAlignment = Alignment.Top
+                    .height(140.dp) // Fixed height for image area
+                    .background(Color.Black.copy(alpha = 0.4f))
             ) {
-                // Left side - Planet Image
+                CoilImage(
+                    imageModel = { planet.model_thumbnail },
+                    imageOptions = ImageOptions(contentScale = ContentScale.Crop),
+                    modifier = Modifier.fillMaxSize()
+                )
+                
+                // Rarity Badge Top Right
                 Box(
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .fillMaxWidth(0.4f)
-                        .clip(shape = RoundedCornerShape(topStart = 18.dp, bottomStart = 18.dp))
-                        .background(color = Color.Black)
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
                 ) {
-                    CoilImage(
-                        imageModel = { planet.model_thumbnail },
-                        imageOptions = ImageOptions(contentScale = ContentScale.FillBounds),
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-
-                // Right side - Info and Buttons
-                Box(
-                    modifier = Modifier
-                        .padding(start = 10.dp)
-                        .fillMaxHeight()
-                        .fillMaxWidth()
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        // Top section - Title, Rarity, XP
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(5.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = planet.model_name,
-                                color = Color.Black,
-                                style = TextStyle(
-                                    fontWeight = FontWeight.Bold,
-                                    letterSpacing = 1.sp
-                                ),
-                                fontFamily = Rajdhani,
-                                fontSize = 18.sp
-                            )
-                            RarityBadge(rarity = planet.rarity)
-                        }
-
-                        Text(
-                            text = "${planet.xp_reward} XP",
-                            color = Color(0xffad46ff),
-                            style = TextStyle(
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 0.5.sp
-                            ),
-                            fontFamily = Rajdhani,
-                            fontSize = 16.sp
-                        )
-
-                        // Middle section - Description
-                        Text(
-                            text = planet.description ?: "Description",
-                            color = Color.Black,
-                            style = TextStyle(
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 1.sp
-                            ),
-                            modifier = Modifier
-                                .height(100.dp)
-                                .fillMaxWidth()
-                        )
-
-                        Row(
-                            modifier = Modifier.padding(bottom = 5.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            ActionButton(
-                                icon = R.drawable.eye,
-                                tintColor = Color(0xff0061fc),
-                                backgroundColor = Color.White,
-                                modifier = Modifier
-                                    .size(45.dp)
-                                    .border(
-                                        border = BorderStroke(2.dp, Color(0xff0061fc)),
-                                        shape = RoundedCornerShape(8.dp)
-                                    ),
-                                onClick = {
-                                    if (!locked) {
-                                        navigateToModelViewer(
-                                            planet.model_url,
-                                            planet.model_name
-                                        )
-                                    } else {
-                                        Toast.makeText(
-                                            context,
-                                            "You Haven't Unlocked This Yet!",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                }
-                            )
-
-                            ActionButton(
-                                icon = R.drawable.thunder,
-                                tintColor = Color.White,
-                                backgroundColor = Color(0xffad46ff),
-                                modifier = Modifier.size(45.dp),
-                                onClick = {}
-                            )
-                        }
-                    }
+                    RarityBadge(rarity = planet.rarity)
                 }
             }
 
-            // Locked Overlay
-            if (locked) {
+            // Bottom Content Section
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                // Title
+                Text(
+                    text = planet.model_name,
+                    color = Color.White,
+                    style = TextStyle(fontWeight = FontWeight.Bold),
+                    fontFamily = Rajdhani,
+                    fontSize = 18.sp,
+                    maxLines = 1,
+                    letterSpacing = 0.5.sp
+                )
+
+                // XP Value
+                Text(
+                    text = "${planet.xp_reward} XP",
+                    color = Color(0xFF00E5FF),
+                    style = TextStyle(fontWeight = FontWeight.Bold),
+                    fontFamily = Rajdhani,
+                    fontSize = 14.sp
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+                
+                // Action Button (View) - Centered or full width?
+                // Let's make a small "View" button
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
                         .background(
-                            color = Color.Black.copy(alpha = 0.5f),
-                            shape = RoundedCornerShape(18.dp)
-                        ),
+                            Brush.horizontalGradient(
+                                colors = listOf(Color(0xFF0061FC), Color(0xFF2979FF))
+                            )
+                        )
+                        .padding(vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.outline_block_24),
-                            contentDescription = "Locked",
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(48.dp)
-                                .padding(bottom = 8.dp)
-                        )
-
-                        Text(
-                            text = "LOCKED",
-                            color = Color.White,
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 1.sp
-                            ),
-                            fontFamily = Rajdhani,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(horizontal = 16.dp)
-                        )
-
-                        Text(
-                            text = "Unlock by completing\nmore missions",
-                            color = Color.White.copy(alpha = 0.8f),
-                            style = TextStyle(
-                                fontSize = 12.sp,
-                                letterSpacing = 0.5.sp
-                            ),
-                            fontFamily = Rajdhani,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                        )
-                    }
+                    Text(
+                        text = if(locked) "LOCKED" else "VIEW 3D",
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = Rajdhani,
+                        letterSpacing = 1.sp
+                    )
                 }
+            }
+        }
+        
+        // Locked Overlay (Full Cover)
+        if (locked) {
+            Box(
+                modifier = Modifier
+                    .background(Color.Black.copy(alpha = 0.6f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.outline_block_24),
+                    contentDescription = "Locked",
+                    tint = Color.White.copy(alpha = 0.8f),
+                    modifier = Modifier.size(32.dp)
+                )
             }
         }
     }
@@ -252,45 +191,22 @@ private fun RarityBadge(rarity: String) {
 
     Box(
         modifier = Modifier
-            .clip(shape = RoundedCornerShape(12.dp))
-            .background(color = rarityColor)
-            .padding(horizontal = 10.dp, vertical = 5.dp),
+            .clip(RoundedCornerShape(6.dp))
+            .background(color = rarityColor.copy(alpha = 0.9f))
+            .padding(horizontal = 6.dp, vertical = 2.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = rarity,
+            text = rarity.uppercase().take(1), // Just 'R', 'C', or 'L' for compact look? Or full text if fits. 
+            // 'Rare' fits.
+//            text = rarity,
             color = Color.White,
             textAlign = TextAlign.Center,
             style = TextStyle(
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 0.5.sp
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold
             ),
             fontFamily = Rajdhani
         )
     }
-}
-
-@Composable
-private fun ActionButton(
-    icon: Int,
-    tintColor: Color,
-    backgroundColor: Color,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    IconButton(
-        onClick = onClick,
-        modifier = modifier
-            .clip(shape = RoundedCornerShape(8.dp))
-            .background(color = backgroundColor),
-        content = {
-            Icon(
-                painter = painterResource(id = icon),
-                contentDescription = "Action",
-                tint = tintColor,
-                modifier = Modifier.fillMaxSize(0.5f)
-            )
-        }
-    )
 }
