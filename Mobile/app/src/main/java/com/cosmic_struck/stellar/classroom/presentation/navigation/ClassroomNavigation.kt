@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.cosmic_struck.stellar.classroom.presentation.screens.ChatBotScreen
 import com.cosmic_struck.stellar.classroom.presentation.screens.ClassroomHomeScreen
 import com.cosmic_struck.stellar.classroom.presentation.screens.ClassroomModuleScreen
 import com.cosmic_struck.stellar.classroom.presentation.screens.QuizScreen
@@ -58,6 +59,9 @@ fun NavGraphBuilder.classroomGraph(navHostController: NavHostController){
                 navigateToQuizScreen = {
                     navHostController.navigate(ClassroomScreens.QuizScreen.route)
                 },
+                navigateToChatScreen = {
+                    navHostController.navigate(ClassroomScreens.ChatBotScreen.route)
+                },
                 viewModel = viewmodel
             )
         }
@@ -91,6 +95,21 @@ fun NavGraphBuilder.classroomGraph(navHostController: NavHostController){
                 viewModel = viewmodel
             )
         }
+
+        composable(
+            route = ClassroomScreens.ChatBotScreen.route
+        ){
+            val entry = remember(it) {
+                navHostController.getBackStackEntry("classroom_graph/{classroom_id}")
+            }
+            val viewmodel : ClassroomViewModel = hiltViewModel<ClassroomViewModel>(entry)
+            ChatBotScreen(
+                onBack = {
+                    navHostController.popBackStack()
+                },
+                viewModel = viewmodel
+            )
+        }
     }
 }
 
@@ -99,5 +118,5 @@ private sealed class ClassroomScreens(val route: String){
     object ClassroomModuleScreen : ClassroomScreens("classroom_module_screen")
     object ModuleSummaryScreen : ClassroomScreens("module_summary_screen")
     object QuizScreen : ClassroomScreens("quiz_screen")
+    object ChatBotScreen : ClassroomScreens("chatbot_screen")
 }
-

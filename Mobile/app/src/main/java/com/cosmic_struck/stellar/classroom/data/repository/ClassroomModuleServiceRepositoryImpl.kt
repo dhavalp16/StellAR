@@ -1,5 +1,8 @@
 package com.cosmic_struck.stellar.classroom.data.repository
 
+import com.cosmic_struck.stellar.classroom.data.dto.ChatMessage
+import com.cosmic_struck.stellar.classroom.data.dto.ChatRequest
+import com.cosmic_struck.stellar.classroom.data.dto.ChatResponse
 import com.cosmic_struck.stellar.classroom.data.dto.ProcessResponse
 import com.cosmic_struck.stellar.classroom.data.service.ClassroomModuleService
 import okhttp3.MediaType.Companion.toMediaType
@@ -18,4 +21,13 @@ class ClassroomModuleServiceRepositoryImpl @Inject constructor(
         return classroomModuleService.processPdf(descriptionBody, file)
     }
 
+    override suspend fun sendChatMessage(
+        context: String,
+        message: String,
+        history: List<ChatMessage>
+    ): ChatResponse {
+        return classroomModuleService.sendChatMessage(
+            ChatRequest(context, message, history)
+        )
+    }
 }

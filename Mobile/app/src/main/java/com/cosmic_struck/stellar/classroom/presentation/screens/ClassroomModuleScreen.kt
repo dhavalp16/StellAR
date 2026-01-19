@@ -73,6 +73,7 @@ private val AccentOrange = Color(0xFFFF7043)
 fun ClassroomModuleScreen(
     navigateToSummaryScreen: () -> Unit,
     navigateToQuizScreen: () -> Unit,
+    navigateToChatScreen: () -> Unit,
     viewModel: ClassroomViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -150,7 +151,8 @@ fun ClassroomModuleScreen(
                                         pdfPath = state.pdf_path
                                     )
                                 },
-                                onQuizClick = navigateToQuizScreen
+                                onQuizClick = navigateToQuizScreen,
+                                onChatClick = navigateToChatScreen
                             )
                         }
                     }
@@ -325,7 +327,8 @@ private fun ModuleInfoCard(
 private fun ActionButtonsGrid(
     onSummaryClick: () -> Unit,
     onNotesClick: () -> Unit,
-    onQuizClick: () -> Unit
+    onQuizClick: () -> Unit,
+    onChatClick: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -352,14 +355,27 @@ private fun ActionButtonsGrid(
             )
         }
 
-        // Bottom: Quiz (full width)
-        ActionButton(
+        // Middle row: Quiz & Chat
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            emoji = "🎯",
-            label = "Start Quiz",
-            color = AccentOrange,
-            onClick = onQuizClick
-        )
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            ActionButton(
+                modifier = Modifier.weight(1f),
+                emoji = "🎯",
+                label = "Start Quiz",
+                color = AccentOrange,
+                onClick = onQuizClick
+            )
+
+            ActionButton(
+                modifier = Modifier.weight(1f),
+                emoji = "💬",
+                label = "Chat",
+                color = Color(0xFF42A5F5),
+                onClick = onChatClick
+            )
+        }
     }
 }
 

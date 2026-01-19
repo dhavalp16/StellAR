@@ -28,7 +28,8 @@ class ModuleProcessLocalRepository @Inject constructor(
             quiz = quizList,
             quiz_count = entity.quizCount,
             success = true,
-            summary = entity.summary
+            summary = entity.summary,
+            extracted_text = entity.extractedText
         )
     }
 
@@ -40,7 +41,8 @@ class ModuleProcessLocalRepository @Inject constructor(
             moduleId = moduleId,
             summary = response.summary,
             quizJson = gson.toJson(response.quiz),
-            quizCount = response.quiz_count
+            quizCount = response.quiz_count,
+            extractedText = response.extracted_text
         )
         dao.insert(entity)
     }

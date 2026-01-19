@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cosmic_struck.stellar.classroom.presentation.viewmodel.delegate.ChatDelegate
 import com.cosmic_struck.stellar.classroom.presentation.viewmodel.delegate.ClassroomHomeScreenDelegate
 import com.cosmic_struck.stellar.classroom.presentation.viewmodel.delegate.ClassroomModuleDelegate
 import com.cosmic_struck.stellar.classroom.presentation.viewmodel.delegate.QuizManagerDelegate
@@ -23,10 +24,12 @@ import javax.inject.Inject
 class ClassroomViewModel @Inject constructor(
     private val classroomHomeScreenDelegate: ClassroomHomeScreenDelegate,
     private val classroomModuleDelegate: ClassroomModuleDelegate,
+    private val chatDelegate: ChatDelegate,
 ) : ViewModel() {
 
     val homeState: StateFlow<ClassroomHomeScreenState> = classroomHomeScreenDelegate.state
     val moduleState: StateFlow<ClassroomModuleState> = classroomModuleDelegate.state
+    val chatState: StateFlow<ChatState> = chatDelegate.state
 
     private var quizManagerDelegate: QuizManagerDelegate? = null
 
@@ -86,5 +89,44 @@ class ClassroomViewModel @Inject constructor(
 
     fun onToggle(index: Int) {
         classroomHomeScreenDelegate.onToggle(index)
+    }
+
+    // ================================
+    // CHATBOT METHODS
+    // ================================
+
+    /**
+     * Initialize chat with document context.
+     * Uses extracted_text from process info if available, falls back to summary.
+     */
+    fun initializeChat() {
+        val context = moduleState.value.processInfo?.extracted_text
+            ?: moduleState.value.processInfo?.summary
+            ?: moduleState.value.module?.moduleDesc
+            ?: ""
+        chatDelegate.setContext(context)
+    }
+
+    /**
+     * Send a message to the chatbot.
+     */
+    fun sendChatMessage(message: String) {
+        viewModelScope.launch {
+            chatDelegate.sendMessage(message)
+        }
+    }
+
+    /**
+     * Clear chat error state.
+     */
+    fun clearChatError() {
+        chatDelegate.clearError()
+    }
+
+    /**
+     * Reset chat to initial state.
+     */
+    fun resetChat() {
+        chatDelegate.reset()
     }
 }
