@@ -30,7 +30,7 @@ val gridList = listOf<GridItems>(
     GridItems(
         title = "Biology",
         icon = R.drawable.biology_icon,
-        navigationRoute = Screens.BiologyHomeScreen.route,
+        navigationRoute = "biology_navigation",  // Navigate directly to biology nav graph
         color = Color(0xff00C853)
     ),
 
