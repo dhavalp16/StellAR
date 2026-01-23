@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import com.cosmic_struck.stellar.auth.presentation.navigation.authGraph
 import com.cosmic_struck.stellar.biology.navigation.biologyNavigation
 import com.cosmic_struck.stellar.chemistry.home.ChemistryHomeScreen
+import com.cosmic_struck.stellar.chemistry.navigation.chemistryNavigation
 import com.cosmic_struck.stellar.classroom.presentation.navigation.classroomGraph
 import com.cosmic_struck.stellar.create_module.presentation.navigation.createModuleNavigation
 import com.cosmic_struck.stellar.history.home.HistoryHomeScreen
@@ -80,7 +81,9 @@ fun MainNavGraph(
                 PhysicsHomeScreen()
             }
             composable(route = Screens.ChemistryHomeScreen.route){
-                ChemistryHomeScreen()
+                ChemistryHomeScreen(
+                    navHostController
+                )
             }
             composable(route = Screens.HistoryHomeScreen.route){
                 HistoryHomeScreen()
@@ -88,7 +91,7 @@ fun MainNavGraph(
             
             // Biology navigation graph
             biologyNavigation(navHostController)
-            
+            chemistryNavigation(navHostController)
             arLabNavigation(navHostController)
             authGraph(navHostController)
             scanImageGraph(navHostController)

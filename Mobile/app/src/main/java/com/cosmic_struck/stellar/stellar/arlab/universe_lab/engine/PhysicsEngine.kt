@@ -20,8 +20,8 @@ class PhysicsEngine(
     // Get a body by ID
     fun getBody(bodyId: String): CelestialBody? = bodies.find { it.id == bodyId }
 
-    // Get all bodies
-    fun getBodies(): List<CelestialBody> = bodies.toList()
+    // Get all bodies (deep copy for Compose state reactivity)
+    fun getBodies(): List<CelestialBody> = bodies.map { it.deepCopy() }
 
     // Set time scale for faster/slower simulation (0.5 = half speed, 2.0 = double speed)
     fun setTimeScale(scale: Float) {
@@ -71,6 +71,34 @@ class PhysicsEngine(
     // Run simulation for multiple steps
     fun stepMultiple(steps: Int) {
         repeat(steps) { step() }
+    }
+
+    // Step simulation with per-body speed multipliers
+    fun stepWithMultipliers(multipliers: Map<String, Float>) {
+        val dt = timeStep * timeScale
+
+        // Reset accelerations
+        bodies.forEach { it.resetAcceleration() }
+
+        // Apply gravitational forces
+        GravityCalculator.updateGravitationalForces(bodies)
+
+        // Check for collisions and resolve them
+        for (i in bodies.indices) {
+            for (j in i + 1 until bodies.size) {
+                if (CollisionDetector.areColliding(bodies[i], bodies[j])) {
+                    CollisionDetector.handleCollision(bodies[i], bodies[j])
+                }
+            }
+        }
+
+        // Update positions and velocities with per-body multipliers
+        bodies.forEach { body ->
+            val multiplier = multipliers[body.id] ?: 1f
+            body.update(dt * multiplier)
+        }
+
+        simulationTime += dt
     }
 
     // Get simulation time

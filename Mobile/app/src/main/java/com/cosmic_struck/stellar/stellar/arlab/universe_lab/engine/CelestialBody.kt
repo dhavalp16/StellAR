@@ -28,4 +28,15 @@ data class CelestialBody(
         // p = p + v*dt
         position = position + (velocity * deltaTime)
     }
+
+    // Create a deep copy with new Vector3D instances for Compose state reactivity
+    fun deepCopy(): CelestialBody = CelestialBody(
+        id = id,
+        position = Vector3D(position.x, position.y, position.z),
+        velocity = Vector3D(velocity.x, velocity.y, velocity.z),
+        acceleration = Vector3D(acceleration.x, acceleration.y, acceleration.z),
+        mass = mass,
+        radius = radius,
+        name = name
+    )
 }
