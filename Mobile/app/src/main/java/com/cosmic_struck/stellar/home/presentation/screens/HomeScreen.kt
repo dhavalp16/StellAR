@@ -45,6 +45,7 @@ import com.cosmic_struck.stellar.home.presentation.components.GridItem
 import com.cosmic_struck.stellar.home.presentation.components.JoinClassroomBottomSheet
 import com.cosmic_struck.stellar.home.presentation.components.UserTopBar
 import com.cosmic_struck.stellar.home.presentation.viewmodel.HomeScreenViewModel
+import com.cosmic_struck.stellar.home.presentation.components.HomeBackground
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -110,19 +111,11 @@ fun HomeScreen(
         }
 
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFFF8F9FE),
-                            Color(0xFFE8EAF6),
-                            Color(0xFFF8F9FE)
-                        )
-                    )
-                )
-                .padding(paddingValues)
+            modifier = Modifier.fillMaxSize()
         ) {
+            HomeBackground() // Animated Background
+            
+            Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
@@ -238,5 +231,6 @@ fun HomeScreen(
                 onSubmit = viewModel::joinClassroom
             )
         }
+    }
     }
 }

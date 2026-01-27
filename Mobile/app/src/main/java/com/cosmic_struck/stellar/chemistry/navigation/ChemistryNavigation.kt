@@ -24,7 +24,9 @@ fun NavGraphBuilder.chemistryNavigation(
                 navHostController = navHostController,
                 navigateToScanText = {
                     // Navigate to models screen for now
-                    navHostController.navigate(ChemistryNavigationScreens.ChemistryModels.route)
+                    navHostController.navigate(ChemistryNavigationScreens.ChemistryModels.route).apply {
+
+                    }
                 }
             )
         }
@@ -51,4 +53,6 @@ sealed class ChemistryNavigationScreens(val route: String) {
     object ChemistryHomeScreen : ChemistryNavigationScreens("chemistry_home")
     object ChemistryModels : ChemistryNavigationScreens("chemistry_models_screen")
     object ChemistryARLab : ChemistryNavigationScreens("chemistry_arlab_screen")
+
+    object ReactionLab : ChemistryNavigationScreens("reaction_lab")
 }

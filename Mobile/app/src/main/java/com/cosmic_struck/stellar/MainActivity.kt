@@ -28,6 +28,14 @@ import androidx.work.WorkManager
 import com.cosmic_struck.stellar.common.di.SupabaseModule
 import com.cosmic_struck.stellar.common.navigation.MainNavGraph
 import com.cosmic_struck.stellar.common.work.CleanupWorker
+import com.cosmic_struck.stellar.common.util.OnboardingManager
+import androidx.compose.runtime.collectAsState
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.background
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.Modifier
 import com.cosmic_struck.stellar.ui.theme.StellARTheme
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.jan.supabase.SupabaseClient
@@ -39,6 +47,8 @@ class MainActivity : ComponentActivity() {
     private var sessionDirectory: File? = null
     @Inject
     lateinit var supabaseClient: SupabaseClient
+    @Inject
+    lateinit var onboardingManager: OnboardingManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
@@ -51,10 +61,18 @@ class MainActivity : ComponentActivity() {
                 AppPermissionsHandler()
 
                 val navHostController = rememberNavController()
-                MainNavGraph(
-                    supabase = supabaseClient,
-                    navHostController = navHostController
-                )
+                val onboardingCompleted by onboardingManager.onboardingCompleted.collectAsState(initial = null)
+
+                if (onboardingCompleted != null) {
+                    MainNavGraph(
+                        supabase = supabaseClient,
+                        navHostController = navHostController,
+                        onboardingCompleted = onboardingCompleted!!
+                    )
+                } else {
+                    // Splash / Loading
+                    Box(modifier = Modifier.fillMaxSize().background(Color.Black))
+                }
             }
         }
     }

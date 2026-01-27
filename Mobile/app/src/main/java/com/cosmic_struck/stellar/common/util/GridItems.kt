@@ -37,7 +37,7 @@ val gridList = listOf<GridItems>(
     GridItems(
         title = "Chemistry",
         icon = R.drawable.chemistry_icon,
-        navigationRoute = Screens.ChemistryHomeScreen.route,
+        navigationRoute = "chemistry_navigation",
         color = Color(0xffFF6D00)
     ),
 

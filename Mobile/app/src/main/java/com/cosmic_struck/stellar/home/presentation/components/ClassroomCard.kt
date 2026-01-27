@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -52,10 +53,10 @@ fun ClassroomCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(140.dp),
+            .height(150.dp), // Slightly taller
         onClick = onClick,
-        shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp), // Flat for glass effect
         colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
         Box(
@@ -63,23 +64,42 @@ fun ClassroomCard(
                 .fillMaxSize()
                 .background(
                     Brush.linearGradient(
-                        colors = listOf(color, color.copy(alpha = 0.85f))
+                        colors = listOf(
+                            color.copy(alpha = 0.9f),
+                            color.copy(alpha = 0.75f)
+                        )
                     )
                 )
         ) {
-            // Decorative elements
+            // Glass Shine Effect
+             Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.1f),
+                                Color.Transparent
+                            ),
+                            start = Offset(0f, 0f),
+                            end = Offset(100f, 100f)
+                        )
+                    )
+            )
+
+            // Decorative Orbs
             Box(
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(120.dp)
                     .align(Alignment.TopEnd)
                     .clip(CircleShape)
-                    .background(Color.White.copy(alpha = 0.1f))
+                    .background(Color.White.copy(alpha = 0.08f))
             )
 
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(20.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 // Top row
@@ -92,9 +112,10 @@ fun ClassroomCard(
                         Text(
                             text = classroom.classroom_name,
                             fontFamily = Rajdhani,
-                            fontSize = 22.sp,
+                            fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = Color.White,
+                            letterSpacing = 0.5.sp
                         )
                     }
 
@@ -102,15 +123,16 @@ fun ClassroomCard(
                     if (classroom.is_creator) {
                         Box(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(Color.White.copy(alpha = 0.2f))
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color.Black.copy(alpha = 0.2f))
+                                .padding(horizontal = 10.dp, vertical = 5.dp)
                         ) {
                             Text(
-                                text = "👑 Creator",
-                                fontSize = 12.sp,
+                                text = "OWNER",
+                                fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = Color.White,
+                                letterSpacing = 1.sp
                             )
                         }
                     }
@@ -127,16 +149,16 @@ fun ClassroomCard(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .clip(RoundedCornerShape(20.dp))
-                            .background(Color.White.copy(alpha = 0.2f))
-                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                            .background(Color.Black.copy(alpha = 0.15f))
+                            .padding(horizontal = 12.dp, vertical = 8.dp)
                     ) {
                         Text(text = "👥", fontSize = 14.sp)
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "${classroom.member_count} members",
+                            text = "${classroom.member_count}",
                             fontFamily = Rajdhani,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Medium,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
                     }
@@ -151,16 +173,17 @@ fun ClassroomCard(
                                 clipboardManager.setText(AnnotatedString(classroom.join_code))
                                 Toast.makeText(context, "Code copied!", Toast.LENGTH_SHORT).show()
                             }
-                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                            .padding(horizontal = 14.dp, vertical = 8.dp)
                     ) {
-                        Text(text = "📋", fontSize = 14.sp)
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(text = "COPY CODE", fontSize = 10.sp, color = Color.White.copy(alpha = 0.8f), fontWeight = FontWeight.SemiBold)
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = classroom.join_code,
                             fontFamily = Rajdhani,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color.White,
+                            letterSpacing = 1.sp
                         )
                     }
                 }

@@ -1,4 +1,4 @@
-package com.cosmic_struck.stellar.chemistry.common
+package com.cosmic_struck.stellar.physics.common
 
 import android.util.Log
 import androidx.annotation.DrawableRes
@@ -26,58 +26,57 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.cosmic_struck.stellar.R
-import com.cosmic_struck.stellar.chemistry.navigation.ChemistryNavigationScreens
-import com.cosmic_struck.stellar.common.util.Rajdhani
+import com.cosmic_struck.stellar.physics.navigation.PhysicsNavigationScreens
 
-data class ChemistryBottomAppBarItem(
+
+data class PhysicsBottomAppBarItem(
     val title: String,
     val route: String,
     val secondRoute: String,
     @DrawableRes val image: Int
 )
 
-val chemistryBottomAppBarItems = listOf(
-    ChemistryBottomAppBarItem(
+val physicsBottomAppBarItems = listOf(
+    PhysicsBottomAppBarItem(
         title = "Home",
-        route = "chemistry_navigation",
+        route = "physics_navigation",
         image = R.drawable.vector,
-        secondRoute = ChemistryNavigationScreens.ChemistryHomeScreen.route
+        secondRoute = PhysicsNavigationScreens.PhysicsHomeScreen.route
     ),
-    ChemistryBottomAppBarItem(
+    PhysicsBottomAppBarItem(
         title = "Models",
-        route = ChemistryNavigationScreens.ChemistryModels.route,
+        route = PhysicsNavigationScreens.PhysicsModels.route,
         image = R.drawable.db,
-        secondRoute = ChemistryNavigationScreens.ChemistryModels.route
+        secondRoute = PhysicsNavigationScreens.PhysicsModels.route
     ),
-    ChemistryBottomAppBarItem(
-        title = "Chem Lab",
-        route = ChemistryNavigationScreens.ChemistryARLab.route,
+    PhysicsBottomAppBarItem(
+        title = "Atom Lab",
+        route = PhysicsNavigationScreens.PhysicsARLab.route,
         image = R.drawable.beaker,
-        secondRoute = ChemistryNavigationScreens.ChemistryARLab.route
+        secondRoute = PhysicsNavigationScreens.PhysicsARLab.route
     )
 )
 
 @Composable
-fun ChemistryBottomAppBar(navController: NavController) {
+fun PhysicsBottomAppBar(navController: NavController) {
     NavigationBar(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 25.dp)
             .clip(shape = RoundedCornerShape(50.dp)),
-        containerColor = ChemistryBackground1.copy(alpha = 0.3f),
+        containerColor = PhysicsBgLight.copy(alpha = 0.5f),
         tonalElevation = 10.dp
     ) {
         val navBackStackEntry = navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry.value?.destination?.route
-        Log.d("Chemistry Route Checking", currentRoute.toString())
-        chemistryBottomAppBarItems.forEach { item ->
+        Log.d("Physics Route Checking", currentRoute.toString())
+        physicsBottomAppBarItems.forEach { item ->
             NavigationBarItem(
                 selected = currentRoute == item.secondRoute,
                 onClick = {
                     navController.navigate(item.route) {
-                        popUpTo(navController.graph.startDestinationId) {
+                        popUpTo("physics_navigation") {
                             saveState = true
-
                         }
                     }
                 },
@@ -103,11 +102,11 @@ fun ChemistryBottomAppBar(navController: NavController) {
                     )
                 },
                 colors = NavigationBarItemColors(
-                    selectedIconColor = AtomicCyan,
-                    selectedTextColor = AtomicCyan,
+                    selectedIconColor = AtomCyan,
+                    selectedTextColor = AtomCyan,
                     selectedIndicatorColor = Color.Transparent,
-                    unselectedIconColor = MolecularBlue.copy(alpha = 0.6f),
-                    unselectedTextColor = MolecularBlue.copy(alpha = 0.6f),
+                    unselectedIconColor = AtomPurple.copy(alpha = 0.6f),
+                    unselectedTextColor = AtomPurple.copy(alpha = 0.6f),
                     disabledIconColor = Color.Transparent,
                     disabledTextColor = Color.Transparent
                 )

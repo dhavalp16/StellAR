@@ -1,4 +1,4 @@
-package com.cosmic_struck.stellar.chemistry.common
+package com.cosmic_struck.stellar.history.common
 
 import android.util.Log
 import androidx.annotation.DrawableRes
@@ -26,58 +26,58 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.cosmic_struck.stellar.R
-import com.cosmic_struck.stellar.chemistry.navigation.ChemistryNavigationScreens
-import com.cosmic_struck.stellar.common.util.Rajdhani
+import com.cosmic_struck.stellar.history.navigation.HistoryNavigationScreens
 
-data class ChemistryBottomAppBarItem(
+// val Rajdhani = com.cosmic_struck.stellar.history.common.Rajdhani  <-- Removed to avoid redeclaration
+
+data class HistoryBottomAppBarItem(
     val title: String,
     val route: String,
     val secondRoute: String,
     @DrawableRes val image: Int
 )
 
-val chemistryBottomAppBarItems = listOf(
-    ChemistryBottomAppBarItem(
+val historyBottomAppBarItems = listOf(
+    HistoryBottomAppBarItem(
         title = "Home",
-        route = "chemistry_navigation",
+        route = "history_navigation",
         image = R.drawable.vector,
-        secondRoute = ChemistryNavigationScreens.ChemistryHomeScreen.route
+        secondRoute = HistoryNavigationScreens.HistoryHomeScreen.route
     ),
-    ChemistryBottomAppBarItem(
-        title = "Models",
-        route = ChemistryNavigationScreens.ChemistryModels.route,
+    HistoryBottomAppBarItem(
+        title = "Monuments",
+        route = HistoryNavigationScreens.HistoryModels.route,
         image = R.drawable.db,
-        secondRoute = ChemistryNavigationScreens.ChemistryModels.route
+        secondRoute = HistoryNavigationScreens.HistoryModels.route
     ),
-    ChemistryBottomAppBarItem(
-        title = "Chem Lab",
-        route = ChemistryNavigationScreens.ChemistryARLab.route,
-        image = R.drawable.beaker,
-        secondRoute = ChemistryNavigationScreens.ChemistryARLab.route
+    HistoryBottomAppBarItem(
+        title = "Time Lab",
+        route = HistoryNavigationScreens.HistoryARLab.route,
+        image = R.drawable.beaker, // Assuming generic 'beaker' for now, or change to something ancient if available
+        secondRoute = HistoryNavigationScreens.HistoryARLab.route
     )
 )
 
 @Composable
-fun ChemistryBottomAppBar(navController: NavController) {
+fun HistoryBottomAppBar(navController: NavController) {
     NavigationBar(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 25.dp)
             .clip(shape = RoundedCornerShape(50.dp)),
-        containerColor = ChemistryBackground1.copy(alpha = 0.3f),
+        containerColor = HistoryBgLight.copy(alpha = 0.5f),
         tonalElevation = 10.dp
     ) {
         val navBackStackEntry = navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry.value?.destination?.route
-        Log.d("Chemistry Route Checking", currentRoute.toString())
-        chemistryBottomAppBarItems.forEach { item ->
+        Log.d("History Route Checking", currentRoute.toString())
+        historyBottomAppBarItems.forEach { item ->
             NavigationBarItem(
                 selected = currentRoute == item.secondRoute,
                 onClick = {
                     navController.navigate(item.route) {
-                        popUpTo(navController.graph.startDestinationId) {
+                        popUpTo("history_navigation") {
                             saveState = true
-
                         }
                     }
                 },
@@ -103,11 +103,11 @@ fun ChemistryBottomAppBar(navController: NavController) {
                     )
                 },
                 colors = NavigationBarItemColors(
-                    selectedIconColor = AtomicCyan,
-                    selectedTextColor = AtomicCyan,
+                    selectedIconColor = HistorySecondary,
+                    selectedTextColor = HistorySecondary,
                     selectedIndicatorColor = Color.Transparent,
-                    unselectedIconColor = MolecularBlue.copy(alpha = 0.6f),
-                    unselectedTextColor = MolecularBlue.copy(alpha = 0.6f),
+                    unselectedIconColor = HistoryPrimary.copy(alpha = 0.6f),
+                    unselectedTextColor = HistoryPrimary.copy(alpha = 0.6f),
                     disabledIconColor = Color.Transparent,
                     disabledTextColor = Color.Transparent
                 )

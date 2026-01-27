@@ -13,6 +13,7 @@ import com.cosmic_struck.stellar.chemistry.arlab.components.ChemistryGameCard
 import com.cosmic_struck.stellar.chemistry.common.ChemistryBottomAppBar
 import com.cosmic_struck.stellar.chemistry.common.ChemistryScaffold
 import com.cosmic_struck.stellar.chemistry.domain.model.chemistryGames
+import com.cosmic_struck.stellar.chemistry.navigation.ChemistryNavigationScreens
 import com.cosmic_struck.stellar.common.components.SimpleTopAppBar
 
 @Composable
@@ -51,7 +52,12 @@ fun ChemistryARLabScreen(
                     ChemistryGameCard(
                         onClick = { route ->
                             // For now, just show a toast since backend isn't implemented
-                            Toast.makeText(context, "Coming soon: ${game.title}", Toast.LENGTH_SHORT).show()
+                            if(game == chemistryGames[1]){
+                                navController.navigate(ChemistryNavigationScreens.ReactionLab.route)
+                            }
+                            else{
+                                Toast.makeText(context, "Coming soon: ${game.title}", Toast.LENGTH_SHORT).show()
+                            }
                         },
                         gameModel = game
                     )

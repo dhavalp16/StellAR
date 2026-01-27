@@ -23,18 +23,33 @@ import com.cosmic_struck.stellar.stellar.models.presentation.navigation.modelNav
 import com.cosmic_struck.stellar.stellar.scantext.presentation.navigation.scanImageGraph
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
+import com.cosmic_struck.stellar.onboarding.presentation.OnboardingScreen
+import com.cosmic_struck.stellar.physics.navigation.physicsNavigation
+import com.cosmic_struck.stellar.history.navigation.historyNavigation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainNavGraph(
     supabase: SupabaseClient,
     navHostController: NavHostController,
+    onboardingCompleted: Boolean,
     modifier: Modifier = Modifier) {
 
         val auth = supabase.auth.currentSessionOrNull()
 
         Log.d("MAINNAVGRAPH",auth.toString())
-        NavHost(navHostController, startDestination = if(auth!= null) Screens.HomeScreen.route else "auth") {
+        val startDestination = if (!onboardingCompleted) "onboarding" else if(auth!= null) Screens.HomeScreen.route else "auth"
+        NavHost(navHostController, startDestination = startDestination) {
+
+            composable("onboarding") {
+                OnboardingScreen(
+                    onOnboardingCompleted = {
+                        navHostController.navigate("auth") {
+                            popUpTo("onboarding") { inclusive = true }
+                        }
+                    }
+                )
+            }
 
             composable(
                 route = Screens.HomeScreen.route
@@ -77,17 +92,11 @@ fun MainNavGraph(
             }
 
 
-            composable(route = Screens.PhysicsHomeScreen.route){
-                PhysicsHomeScreen()
-            }
-            composable(route = Screens.ChemistryHomeScreen.route){
-                ChemistryHomeScreen(
-                    navHostController
-                )
-            }
-            composable(route = Screens.HistoryHomeScreen.route){
-                HistoryHomeScreen()
-            }
+            // Physics navigation graph
+            physicsNavigation(navHostController)
+
+            // History navigation graph
+            historyNavigation(navHostController)
             
             // Biology navigation graph
             biologyNavigation(navHostController)
