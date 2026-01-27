@@ -61,6 +61,7 @@ import com.cosmic_struck.stellar.R
 import com.cosmic_struck.stellar.common.util.Rajdhani
 import com.cosmic_struck.stellar.create_module.presentation.components.ModelViewer
 import com.cosmic_struck.stellar.create_module.presentation.viewmodel.CreateModuleViewModel
+import com.cosmic_struck.stellar.create_module.presentation.UploadStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -184,9 +185,17 @@ fun CreateModuleModelScreen(
                 ) {
                     GenerateModelContent(
                         modelImageUri = modelImageUri,
+                        generationStatus = state.generationStatus,
+                        generatedModelUri = state.modelPath,
                         onSelectImage = { imageLauncher.launch("image/*") },
                         onGenerateClick = {
-                            // TODO: Implement model generation
+                            if (modelImageUri != null) {
+                                viewmodel.generateModel(modelImageUri!!)
+                            }
+                        },
+                        onContinueClick = {
+                            viewmodel.createModule()
+                            navigateToUploadTracker()
                         }
                     )
                 }
@@ -361,9 +370,19 @@ private fun UploadModelContent(
 @Composable
 private fun GenerateModelContent(
     modelImageUri: Uri?,
+    generationStatus: UploadStatus,
+    generatedModelUri: Uri?,
     onSelectImage: () -> Unit,
-    onGenerateClick: () -> Unit
+    onGenerateClick: () -> Unit,
+    onContinueClick: () -> Unit
 ) {
+    val isGenerating = generationStatus == UploadStatus.LOADING
+    val isSuccess = generationStatus == UploadStatus.SUCCESS && generatedModelUri != null
+    
+    // If generation was successful, we should probably stick to the success view, 
+    // but allow re-generating by picking a new image? 
+    // For now let's show the model if available.
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth()
@@ -404,89 +423,201 @@ private fun GenerateModelContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Image Upload Area
-        Box(
-            modifier = Modifier
-                .size(200.dp)
-                .clip(RoundedCornerShape(24.dp))
-                .background(
-                    Brush.linearGradient(
-                        colors = listOf(Color(0xFF1a1a3e), Color(0xFF2a2a4e))
+        if (isSuccess && generatedModelUri != null) {
+            // SUCCESS STATE: Show Model
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(280.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFF1a1a3e),
+                                Color(0xFF2a2a4e)
+                            )
+                        )
                     )
-                )
-                .border(
-                    width = 2.dp,
-                    brush = Brush.linearGradient(
-                        colors = if (modelImageUri != null)
-                            listOf(Color(0xFF4CAF50), Color(0xFF81C784))
-                        else
-                            listOf(Color(0xFF7C4DFF), Color(0xFFB388FF))
+                    .border(
+                        width = 2.dp,
+                        brush = Brush.linearGradient(
+                            colors = listOf(Color(0xFF4CAF50), Color(0xFF81C784))
+                        ),
+                        shape = RoundedCornerShape(24.dp)
                     ),
-                    shape = RoundedCornerShape(24.dp)
-                )
-                .clickable(onClick = onSelectImage),
-            contentAlignment = Alignment.Center
-        ) {
-            if (modelImageUri != null) {
-                Image(
-                    painter = rememberAsyncImagePainter(modelImageUri),
-                    contentDescription = "Selected image",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
-            } else {
+                contentAlignment = Alignment.Center
+            ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = "🖼️", fontSize = 48.sp)
-                    Spacer(modifier = Modifier.height(8.dp))
+                    ModelViewer(
+                        modifier = Modifier
+                            .size(180.dp)
+                            .clip(RoundedCornerShape(16.dp)),
+                        modelUri = generatedModelUri
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = "Tap to select image",
-                        color = Color(0xFFb0b0d0),
-                        fontSize = 14.sp
+                        text = "✅ Model Generated!",
+                        color = Color(0xFF4CAF50),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
                     )
                 }
             }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Generate Button
-        Button(
-            onClick = onGenerateClick,
-            enabled = modelImageUri != null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF7C4DFF),
-                disabledContainerColor = Color(0xFF7C4DFF).copy(alpha = 0.3f)
-            ),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // Continue Button
+            Button(
+                onClick = onContinueClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF4CAF50)
+                ),
+                shape = RoundedCornerShape(16.dp)
             ) {
-                Text(text = "✨", fontSize = 18.sp)
-                Spacer(modifier = Modifier.width(8.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Create Module",
+                        fontFamily = Rajdhani,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "🚀", fontSize = 18.sp)
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            // Retry/New Image Button (Text only)
+            Text(
+                text = "Generate Another",
+                color = Color(0xFF7C4DFF),
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp,
+                modifier = Modifier
+                    .clickable { onSelectImage() }
+                    .padding(8.dp)
+            )
+
+        } else {
+            // INPUT STATE: Image Picker + Generate Button
+            
+            // Image Upload Area
+            Box(
+                modifier = Modifier
+                    .size(200.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(Color(0xFF1a1a3e), Color(0xFF2a2a4e))
+                        )
+                    )
+                    .border(
+                        width = 2.dp,
+                        brush = Brush.linearGradient(
+                            colors = if (modelImageUri != null)
+                                listOf(Color(0xFF4CAF50), Color(0xFF81C784))
+                            else
+                                listOf(Color(0xFF7C4DFF), Color(0xFFB388FF))
+                        ),
+                        shape = RoundedCornerShape(24.dp)
+                    )
+                    .clickable(enabled = !isGenerating, onClick = onSelectImage),
+                contentAlignment = Alignment.Center
+            ) {
+                if (modelImageUri != null) {
+                    Image(
+                        painter = rememberAsyncImagePainter(modelImageUri),
+                        contentDescription = "Selected image",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    // If generating, show overlay
+                    if (isGenerating) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Black.copy(alpha = 0.5f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            androidx.compose.material3.CircularProgressIndicator(
+                                color = Color(0xFF7C4DFF)
+                            )
+                        }
+                    }
+                } else {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "🖼️", fontSize = 48.sp)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Tap to select image",
+                            color = Color(0xFFb0b0d0),
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Generate Button
+            Button(
+                onClick = onGenerateClick,
+                enabled = modelImageUri != null && !isGenerating,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF7C4DFF),
+                    disabledContainerColor = Color(0xFF7C4DFF).copy(alpha = 0.3f)
+                ),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (isGenerating) {
+                         // Small progress indicator or text
+                        Text(
+                            text = "Generating...",
+                            fontFamily = Rajdhani,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            color = Color.White
+                        )
+                    } else {
+                        Text(text = "✨", fontSize = 18.sp)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Generate 3D Model",
+                            fontFamily = Rajdhani,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            color = Color.White
+                        )
+                    }
+                }
+            }
+            
+            if (isGenerating) {
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Generate 3D Model",
-                    fontFamily = Rajdhani,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    color = Color.White
+                    text = "This may take up to a minute...",
+                    color = Color(0xFF6a6a8e),
+                    fontSize = 13.sp,
+                    textAlign = TextAlign.Center
                 )
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Coming soon notice
-        Text(
-            text = "⚡ AI generation coming soon",
-            color = Color(0xFF6a6a8e),
-            fontSize = 13.sp,
-            textAlign = TextAlign.Center
-        )
     }
 }

@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.savedstate.savedState
 import com.cosmic_struck.stellar.common.util.Resource
+import com.cosmic_struck.stellar.create_module.domain.usecase.Generate3DModelUseCase
 import com.cosmic_struck.stellar.create_module.domain.usecase.UploadModuleWithModelUseCase
 import com.cosmic_struck.stellar.create_module.presentation.CreateModuleState
 import com.cosmic_struck.stellar.create_module.presentation.ModelChoice
@@ -25,6 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateModuleViewModel @Inject constructor(
     private val uploadModuleWithModelUseCase: UploadModuleWithModelUseCase,
+    private val generate3DModelUseCase: Generate3DModelUseCase,
     private val savedStateHandle: SavedStateHandle,
     private val context: Application
 ) : ViewModel(){
@@ -100,6 +102,31 @@ class CreateModuleViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     selectedOption = 1,
                     modelChoice = ModelChoice.GENERATE_MODEL)
+            }
+        }
+    }
+
+    fun generateModel(imageUri: Uri) {
+        viewModelScope.launch {
+            generate3DModelUseCase(context, imageUri).collect { resource ->
+                when(resource) {
+                    is Resource.Loading -> {
+                        _state.update { it.copy(generationStatus = UploadStatus.LOADING, error = null) }
+                    }
+                    is Resource.Success -> {
+                        savedStateHandle["model_path"] = resource.data
+                        _state.update { it.copy(
+                            generationStatus = UploadStatus.SUCCESS,
+                            modelPath = resource.data
+                        ) }
+                    }
+                    is Resource.Error -> {
+                        _state.update { it.copy(
+                            generationStatus = UploadStatus.ERROR,
+                            error = resource.message
+                        ) }
+                    }
+                }
             }
         }
     }

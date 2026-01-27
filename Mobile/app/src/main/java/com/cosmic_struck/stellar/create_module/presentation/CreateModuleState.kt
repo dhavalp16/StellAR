@@ -14,7 +14,8 @@ data class CreateModuleState(
     val modelChoice: ModelChoice = ModelChoice.UPLOAD_MODEL,
     val selectedOption: Int = 0,
 
-    val uploadSuccess : UploadStatus = UploadStatus.IDLE
+    val uploadSuccess : UploadStatus = UploadStatus.IDLE,
+    val generationStatus: UploadStatus = UploadStatus.IDLE
 )
 
 enum class UploadStatus{

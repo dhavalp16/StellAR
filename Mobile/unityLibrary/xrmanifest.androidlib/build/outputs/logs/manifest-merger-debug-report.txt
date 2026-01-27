@@ -1,0 +1,27 @@
+-- Merging decision tree log ---
+manifest
+ADDED from L:\AR_EDUCATION\New folder\StellAR\Mobile\unityLibrary\xrmanifest.androidlib\AndroidManifest.xml:2:1-7:12
+INJECTED from L:\AR_EDUCATION\New folder\StellAR\Mobile\unityLibrary\xrmanifest.androidlib\AndroidManifest.xml:2:1-7:12
+	package
+		ADDED from L:\AR_EDUCATION\New folder\StellAR\Mobile\unityLibrary\xrmanifest.androidlib\AndroidManifest.xml:2:70-113
+		INJECTED from L:\AR_EDUCATION\New folder\StellAR\Mobile\unityLibrary\xrmanifest.androidlib\AndroidManifest.xml
+	xmlns:android
+		ADDED from L:\AR_EDUCATION\New folder\StellAR\Mobile\unityLibrary\xrmanifest.androidlib\AndroidManifest.xml:2:11-69
+application
+ADDED from L:\AR_EDUCATION\New folder\StellAR\Mobile\unityLibrary\xrmanifest.androidlib\AndroidManifest.xml:3:3-6:17
+activity#com.unity3d.player.UnityPlayerActivity
+ADDED from L:\AR_EDUCATION\New folder\StellAR\Mobile\unityLibrary\xrmanifest.androidlib\AndroidManifest.xml:4:5-71
+	android:name
+		ADDED from L:\AR_EDUCATION\New folder\StellAR\Mobile\unityLibrary\xrmanifest.androidlib\AndroidManifest.xml:4:15-68
+activity#com.unity3d.player.UnityPlayerGameActivity
+ADDED from L:\AR_EDUCATION\New folder\StellAR\Mobile\unityLibrary\xrmanifest.androidlib\AndroidManifest.xml:5:5-75
+	android:name
+		ADDED from L:\AR_EDUCATION\New folder\StellAR\Mobile\unityLibrary\xrmanifest.androidlib\AndroidManifest.xml:5:15-72
+uses-sdk
+INJECTED from L:\AR_EDUCATION\New folder\StellAR\Mobile\unityLibrary\xrmanifest.androidlib\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from L:\AR_EDUCATION\New folder\StellAR\Mobile\unityLibrary\xrmanifest.androidlib\AndroidManifest.xml
+INJECTED from L:\AR_EDUCATION\New folder\StellAR\Mobile\unityLibrary\xrmanifest.androidlib\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from L:\AR_EDUCATION\New folder\StellAR\Mobile\unityLibrary\xrmanifest.androidlib\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from L:\AR_EDUCATION\New folder\StellAR\Mobile\unityLibrary\xrmanifest.androidlib\AndroidManifest.xml
