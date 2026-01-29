@@ -40,10 +40,24 @@ import com.cosmic_struck.stellar.ui.theme.StellARTheme
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.jan.supabase.SupabaseClient
 import java.io.File
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    companion object {
+        init {
+            System.loadLibrary("stellar-physics")
+        }
+    }
+
+    external fun stringFromJNI(): String
+    external fun nativeAddBody(mass: Float, x: Float, y: Float, z: Float, vx: Float, vy: Float, vz: Float): Int
+    external fun nativeUpdate(deltaTime: Float)
+    external fun nativeGetPosition(index: Int): String
+
     private var sessionDirectory: File? = null
     @Inject
     lateinit var supabaseClient: SupabaseClient
@@ -51,6 +65,43 @@ class MainActivity : ComponentActivity() {
     lateinit var onboardingManager: OnboardingManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // --- PHYSICS ENGINE TEST START ---
+        Log.d("StellAR-Physics", stringFromJNI())
+        
+        // 1. Create a "Mini-Sun" (Heavy, stationary at z = -2.0)
+        // nativeAddBody(mass, x, y, z, vx, vy, vz)
+        val sunIndex = nativeAddBody(1000.0f, 0f, 0f, -2.0f, 0f, 0f, 0f)
+        
+        // 2. Create a "Mini-Earth" (Lighter, positioned at x = 1.0 relative to sun -> (1, 0, -2))
+        // Velocity: Needs to be orbital velocity for circular orbit. v = sqrt(G*M / r).
+        // r = 1.0. M = 1000. G = 1.0. v = sqrt(1000) ~= 31.62
+        // We throw it sideways (along Y for visible orbit, or Z? No, use X/Z plane. Sun is at -2 Z. Earth at 1 X, -2 Z? No.
+        // Let's put Sun at (0,0,0) for simplicity logic, or compensate.
+        // Let's stick to user request: Sun at (0,0,-2). Earth at (2, 0, -2) (r=2)
+        // v = sqrt(1000/2) = sqrt(500) ~= 22.36.
+        // Actually user example: "Mini-Sun at (0,0,-2)... Mini-Earth orbiting it."
+        // I'll put Earth at (1, 0, -2) for radius 1. Orbit in XY plane? Or XZ?
+        // Let's do XY Orbit around Z=-2.
+        // Pos: (1, 0, -2). Vel: (0, 31.6, 0).
+        val earthIndex = nativeAddBody(10.0f, 1.0f, 0f, -2.0f, 0f, 31.62f, 0f)
+
+        // 3. Start Simulation Loop (using coroutine to avoid blocking main thread)
+        lifecycleScope.launch {
+            while (true) {
+                // nativeUpdate(deltaTime). 16ms = 0.016s
+                nativeUpdate(0.016f) 
+                
+                val sunPos = nativeGetPosition(sunIndex)
+                val earthPos = nativeGetPosition(earthIndex)
+                
+                Log.d("StellAR-Physics", "Sun: [$sunPos] | Earth: [$earthPos]")
+                
+                delay(16)
+            }
+        }
+        // --- PHYSICS ENGINE TEST END ---
+
         enableEdgeToEdge(
             navigationBarStyle = SystemBarStyle.light(scrim = TRANSPARENT, darkScrim = TRANSPARENT)
         )

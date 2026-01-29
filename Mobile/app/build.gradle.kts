@@ -30,6 +30,12 @@ android {
             abiFilters += listOf("arm64-v8a")
         }
 
+        externalNativeBuild {
+            cmake {
+                cppFlags += ""
+            }
+        }
+
 
         val file = rootProject.file("secrets.properties")
         val properties = Properties()
@@ -53,12 +59,20 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
     kotlinOptions {
+        jvmTarget = "21"
         freeCompilerArgs = listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
     }
     buildFeatures {
         compose = true
         prefab = true
         buildConfig = true
+    }
+    
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
     }
 }
 
